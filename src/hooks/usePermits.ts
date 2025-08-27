@@ -26,34 +26,14 @@ export const usePermits = () => {
     }
   };
 
-  // Utility to convert camelCase keys to snake_case recursively
-  const toSnakeCase = (obj: any): any => {
-    if (Array.isArray(obj)) {
-      return obj.map(toSnakeCase);
-    } else if (obj !== null && typeof obj === 'object') {
-      return Object.keys(obj).reduce((acc: { [key: string]: any }, key) => {
-        const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
-        acc[snakeKey] = toSnakeCase(obj[key]);
-        return acc;
-      }, {});
-    }
-    return obj;
-  };
-
   const addPermit = async (permitData: Omit<Permit, 'id' | 'createdAt' | 'createdBy' | 'canReopen'>) => {
     try {
-      const snakePermitData = toSnakeCase(permitData);
-      const response = await permitsAPI.create(snakePermitData);
+      const response = await permitsAPI.create(permitData);
       const newPermit = response.data.permit;
-  setPermits((prev: Permit[]) => [newPermit, ...prev]);
+      setPermits(prev => [newPermit, ...prev]);
       return newPermit;
-    } catch (error: any) {
-      // Log full error response for debugging
-      if (error.response) {
-        console.error('Add permit error:', error.response.data);
-      } else {
-        console.error('Add permit error:', error);
-      }
+    } catch (error) {
+      console.error('Add permit error:', error);
       throw error;
     }
   };
@@ -62,7 +42,7 @@ export const usePermits = () => {
     try {
       const response = await permitsAPI.update(permitId, updates);
       const updatedPermit = response.data.permit;
-      setPermits((prev: Permit[]) => prev.map((permit: Permit) => 
+      setPermits(prev => prev.map(permit => 
         permit.id === permitId ? updatedPermit : permit
       ));
       return updatedPermit;
@@ -75,7 +55,7 @@ export const usePermits = () => {
   const deletePermit = async (permitId: string) => {
     try {
       await permitsAPI.delete(permitId);
-  setPermits((prev: Permit[]) => prev.filter((permit: Permit) => permit.id !== permitId));
+      setPermits(prev => prev.filter(permit => permit.id !== permitId));
     } catch (error) {
       console.error('Delete permit error:', error);
       throw error;
@@ -86,7 +66,7 @@ export const usePermits = () => {
     try {
       const response = await permitsAPI.close(permitId);
       const updatedPermit = response.data.permit;
-      setPermits((prev: Permit[]) => prev.map((permit: Permit) => 
+      setPermits(prev => prev.map(permit => 
         permit.id === permitId ? updatedPermit : permit
       ));
       return updatedPermit;
@@ -100,7 +80,7 @@ export const usePermits = () => {
     try {
       const response = await permitsAPI.reopen(permitId);
       const updatedPermit = response.data.permit;
-      setPermits((prev: Permit[]) => prev.map((permit: Permit) => 
+      setPermits(prev => prev.map(permit => 
         permit.id === permitId ? updatedPermit : permit
       ));
       return true;

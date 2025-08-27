@@ -45,7 +45,7 @@ A comprehensive permit management system built with React, Node.js, and PostgreS
 2. Connect the same GitHub repository
 3. Set the following:
    - **Root Directory**: `.` (root)
-   - **Build Command**: `npm install && npm run build`
+   - **Build Command**: `npm install; npm run build`
    - **Publish Directory**: `dist`
    - **Node Version**: 18 or higher
 

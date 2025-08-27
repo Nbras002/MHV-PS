@@ -235,7 +235,7 @@ INSERT INTO users (
   'admin@example.com',
   'System',
   'Administrator',
-  ARRAY["headquarters","riyadh","dammam","hail","jubail","jeddah","tabuk","taif","baha","yanbu","makkah","jouf","qassim","ahsa","northern_borders","medina","asir","jizan","najran"],
+  ARRAY['headquarters','riyadh','dammam','hail','jubail','jeddah','tabuk','taif','baha','yanbu','makkah','jouf','qassim','ahsa','northern_borders','medina','asir','jizan','najran'],
   'admin'
 ) ON CONFLICT (username) DO NOTHING;
 

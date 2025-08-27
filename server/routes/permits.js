@@ -1,0 +1,386 @@
+import express from 'express';
+import { body, validationResult } from 'express-validator';
+import { supabase } from '../config/database.js';
+import { requirePermission } from '../middleware/auth.js';
+
+const router = express.Router();
+
+// Get all permits
+router.get('/', requirePermission('canViewPermits'), async (req, res) => {
+  try {
+    const { region, date, search } = req.query;
+    
+    let query = supabase
+      .from('permits')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    // Apply filters based on user role and region
+    if (req.user.role !== 'admin' && req.user.role !== 'manager') {
+      query = query.in('region', req.user.region);
+    }
+
+    if (region) {
+      query = query.eq('region', region);
+    }
+
+    if (date) {
+      query = query.eq('date', date);
+    }
+
+    if (search) {
+      query = query.or(`permit_number.ilike.%${search}%,carrier_name.ilike.%${search}%,carrier_id.ilike.%${search}%,location.ilike.%${search}%`);
+    }
+
+    const { data: permits, error } = await query;
+
+    if (error) {
+      return res.status(500).json({ error: 'Failed to fetch permits' });
+    }
+
+    res.json({ permits });
+  } catch (error) {
+    console.error('Get permits error:', error);
+    res.status(500).json({ error: 'Failed to fetch permits' });
+  }
+});
+
+// Get permit by ID
+router.get('/:id', requirePermission('canViewPermits'), async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { data: permit, error } = await supabase
+      .from('permits')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error || !permit) {
+      return res.status(404).json({ error: 'Permit not found' });
+    }
+
+    // Check if user can view this permit based on region
+    if (req.user.role !== 'admin' && req.user.role !== 'manager') {
+      if (!req.user.region.includes(permit.region)) {
+        return res.status(403).json({ error: 'Access denied' });
+      }
+    }
+
+    res.json({ permit });
+  } catch (error) {
+    console.error('Get permit error:', error);
+    res.status(500).json({ error: 'Failed to fetch permit' });
+  }
+});
+
+// Create permit
+router.post('/', [
+  requirePermission('canCreatePermits'),
+  body('permit_number').trim().isLength({ min: 1 }).withMessage('Permit number is required'),
+  body('date').isISO8601().withMessage('Valid date is required'),
+  body('region').trim().isLength({ min: 1 }).withMessage('Region is required'),
+  body('location').trim().isLength({ min: 1 }).withMessage('Location is required'),
+  body('carrier_name').trim().isLength({ min: 1 }).withMessage('Carrier name is required'),
+  body('carrier_id').trim().isLength({ min: 1 }).withMessage('Carrier ID is required'),
+  body('request_type').trim().isLength({ min: 1 }).withMessage('Request type is required'),
+  body('vehicle_plate').trim().isLength({ min: 1 }).withMessage('Vehicle plate is required'),
+  body('materials').isArray({ min: 1 }).withMessage('At least one material is required')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const permitData = {
+      ...req.body,
+      created_by: req.user.id,
+      can_reopen: true
+    };
+
+    // Check if user can create permits in this region
+    if (req.user.role !== 'admin' && req.user.role !== 'manager') {
+      if (!req.user.region.includes(permitData.region)) {
+        return res.status(403).json({ error: 'Cannot create permits in this region' });
+      }
+    }
+
+    const { data: permit, error } = await supabase
+      .from('permits')
+      .insert(permitData)
+      .select()
+      .single();
+
+    if (error) {
+      if (error.code === '23505') {
+        return res.status(409).json({ error: 'Permit number already exists' });
+      }
+      return res.status(500).json({ error: 'Failed to create permit' });
+    }
+
+    // Log activity
+    await supabase
+      .from('activity_logs')
+      .insert({
+        user_id: req.user.id,
+        user_name: `${req.user.first_name} ${req.user.last_name}`,
+        action: 'create_permit',
+        details: `Created permit ${permit.permit_number}`,
+        ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
+        user_agent: req.get('User-Agent') || 'unknown'
+      });
+
+    res.status(201).json({ permit });
+  } catch (error) {
+    console.error('Create permit error:', error);
+    res.status(500).json({ error: 'Failed to create permit' });
+  }
+});
+
+// Update permit
+router.put('/:id', [
+  requirePermission('canEditPermits'),
+  body('permit_number').optional().trim().isLength({ min: 1 }),
+  body('date').optional().isISO8601(),
+  body('region').optional().trim().isLength({ min: 1 }),
+  body('location').optional().trim().isLength({ min: 1 }),
+  body('carrier_name').optional().trim().isLength({ min: 1 }),
+  body('carrier_id').optional().trim().isLength({ min: 1 }),
+  body('request_type').optional().trim().isLength({ min: 1 }),
+  body('vehicle_plate').optional().trim().isLength({ min: 1 }),
+  body('materials').optional().isArray({ min: 1 })
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { id } = req.params;
+
+    // Check if permit exists and user can edit it
+    const { data: existingPermit, error: fetchError } = await supabase
+      .from('permits')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (fetchError || !existingPermit) {
+      return res.status(404).json({ error: 'Permit not found' });
+    }
+
+    // Check region access
+    if (req.user.role !== 'admin' && req.user.role !== 'manager') {
+      if (!req.user.region.includes(existingPermit.region)) {
+        return res.status(403).json({ error: 'Access denied' });
+      }
+    }
+
+    // Don't allow editing closed permits
+    if (existingPermit.closed_at) {
+      return res.status(400).json({ error: 'Cannot edit closed permit' });
+    }
+
+    const { data: permit, error } = await supabase
+      .from('permits')
+      .update(req.body)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      return res.status(500).json({ error: 'Failed to update permit' });
+    }
+
+    // Log activity
+    await supabase
+      .from('activity_logs')
+      .insert({
+        user_id: req.user.id,
+        user_name: `${req.user.first_name} ${req.user.last_name}`,
+        action: 'update_permit',
+        details: `Updated permit ${permit.permit_number}`,
+        ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
+        user_agent: req.get('User-Agent') || 'unknown'
+      });
+
+    res.json({ permit });
+  } catch (error) {
+    console.error('Update permit error:', error);
+    res.status(500).json({ error: 'Failed to update permit' });
+  }
+});
+
+// Close permit
+router.patch('/:id/close', requirePermission('canClosePermits'), async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Check if permit exists
+    const { data: existingPermit, error: fetchError } = await supabase
+      .from('permits')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (fetchError || !existingPermit) {
+      return res.status(404).json({ error: 'Permit not found' });
+    }
+
+    if (existingPermit.closed_at) {
+      return res.status(400).json({ error: 'Permit is already closed' });
+    }
+
+    // Check region access
+    if (req.user.role !== 'admin' && req.user.role !== 'manager') {
+      if (!req.user.region.includes(existingPermit.region)) {
+        return res.status(403).json({ error: 'Access denied' });
+      }
+    }
+
+    const { data: permit, error } = await supabase
+      .from('permits')
+      .update({
+        closed_by: req.user.id,
+        closed_by_name: `${req.user.first_name} ${req.user.last_name} [${req.user.username}]`,
+        closed_at: new Date().toISOString(),
+        can_reopen: true
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      return res.status(500).json({ error: 'Failed to close permit' });
+    }
+
+    // Log activity
+    await supabase
+      .from('activity_logs')
+      .insert({
+        user_id: req.user.id,
+        user_name: `${req.user.first_name} ${req.user.last_name}`,
+        action: 'close_permit',
+        details: `Closed permit ${permit.permit_number}`,
+        ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
+        user_agent: req.get('User-Agent') || 'unknown'
+      });
+
+    res.json({ permit });
+  } catch (error) {
+    console.error('Close permit error:', error);
+    res.status(500).json({ error: 'Failed to close permit' });
+  }
+});
+
+// Reopen permit
+router.patch('/:id/reopen', requirePermission('canReopenPermits'), async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Check if permit exists
+    const { data: existingPermit, error: fetchError } = await supabase
+      .from('permits')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (fetchError || !existingPermit) {
+      return res.status(404).json({ error: 'Permit not found' });
+    }
+
+    if (!existingPermit.closed_at) {
+      return res.status(400).json({ error: 'Permit is not closed' });
+    }
+
+    // Check reopen permissions
+    const canReopenAny = ['admin', 'manager'].includes(req.user.role);
+    const isClosedByUser = existingPermit.closed_by === req.user.id;
+    const closedTime = new Date(existingPermit.closed_at);
+    const hoursPassed = (new Date().getTime() - closedTime.getTime()) / (1000 * 60 * 60);
+
+    if (!canReopenAny && (!isClosedByUser || hoursPassed > 1)) {
+      return res.status(403).json({ error: 'Cannot reopen this permit' });
+    }
+
+    const { data: permit, error } = await supabase
+      .from('permits')
+      .update({
+        closed_by: null,
+        closed_by_name: null,
+        closed_at: null,
+        can_reopen: true
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      return res.status(500).json({ error: 'Failed to reopen permit' });
+    }
+
+    // Log activity
+    await supabase
+      .from('activity_logs')
+      .insert({
+        user_id: req.user.id,
+        user_name: `${req.user.first_name} ${req.user.last_name}`,
+        action: 'reopen_permit',
+        details: `Reopened permit ${permit.permit_number}`,
+        ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
+        user_agent: req.get('User-Agent') || 'unknown'
+      });
+
+    res.json({ permit });
+  } catch (error) {
+    console.error('Reopen permit error:', error);
+    res.status(500).json({ error: 'Failed to reopen permit' });
+  }
+});
+
+// Delete permit
+router.delete('/:id', requirePermission('canDeletePermits'), async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Check if permit exists
+    const { data: existingPermit, error: fetchError } = await supabase
+      .from('permits')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (fetchError || !existingPermit) {
+      return res.status(404).json({ error: 'Permit not found' });
+    }
+
+    const { error } = await supabase
+      .from('permits')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      return res.status(500).json({ error: 'Failed to delete permit' });
+    }
+
+    // Log activity
+    await supabase
+      .from('activity_logs')
+      .insert({
+        user_id: req.user.id,
+        user_name: `${req.user.first_name} ${req.user.last_name}`,
+        action: 'delete_permit',
+        details: `Deleted permit ${existingPermit.permit_number}`,
+        ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
+        user_agent: req.get('User-Agent') || 'unknown'
+      });
+
+    res.json({ message: 'Permit deleted successfully' });
+  } catch (error) {
+    console.error('Delete permit error:', error);
+    res.status(500).json({ error: 'Failed to delete permit' });
+  }
+});
+
+export default router;

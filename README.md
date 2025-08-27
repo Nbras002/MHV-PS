@@ -11,7 +11,7 @@ A comprehensive permit management system built with React, Node.js, and PostgreS
 
 ### Step 1: Database Setup (Supabase)
 1. Create a new project on [Supabase](https://supabase.com)
-2. Go to SQL Editor and run the migration file: `supabase/migrations/polished_summit.sql`
+2. Go to SQL Editor and run file: `database/polished_summit.sql`
 3. Ensure RLS (Row Level Security) is enabled on all tables
 4. Verify the default admin user is created with username: `admin` and password: `Admin123!`
 3. Note down your:

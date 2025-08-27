@@ -24,8 +24,8 @@ A comprehensive permit management system built with React, Node.js, and PostgreS
 2. Connect your GitHub repository
 3. Set the following:
    - **Root Directory**: `server`
-   - **Build Command**: `npm install`
-   - **Start Command**: `npm start`
+   - **Build Command**: `npm install; npm run build`
+   - **Start Command**: `npm run start`
    - **Node Version**: 18 or higher
 
 4. Add Environment Variables:

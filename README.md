@@ -34,7 +34,7 @@ A comprehensive permit management system built with React, Node.js, and PostgreS
    SUPABASE_URL=your_supabase_project_url
    SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
    JWT_SECRET=your_very_long_random_secret_key
-   JWT_EXPIRES_IN=24h
+   JWT_EXPIRES_IN=1h
    FRONTEND_URL=https://your-frontend-app.onrender.com
    RATE_LIMIT_WINDOW_MS=900000
    RATE_LIMIT_MAX_REQUESTS=100

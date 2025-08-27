@@ -4,8 +4,8 @@ services:
     name: project-vepr
     env: node
     plan: free
-    buildCommand: npm install
-    startCommand: npm start
+    buildCommand: npm install; npm run build
+    startCommand: npm run start
     rootDir: ./server
     envVars:
       - key: NODE_ENV
@@ -22,7 +22,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_EXPIRES_IN
-        value: 24h
+        value: 1h
       - key: FRONTEND_URL
         fromService:
           type: web
@@ -39,7 +39,7 @@ services:
     env: node
     plan: free
     buildCommand: npm install && npm run build
-    startCommand: npm run start
+    startCommand: dist
     envVars:
       - key: VITE_SUPABASE_URL
         sync: false

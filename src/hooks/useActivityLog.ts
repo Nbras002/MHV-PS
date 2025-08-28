@@ -13,15 +13,9 @@ export const useActivityLog = () => {
       return;
     }
 
-    // Filter out login/logout activities
-    const filteredParams = {
-      ...params,
-      excludeActions: ['login', 'logout']
-    };
-
     try {
       setLoading(true);
-      const response = await activityAPI.getAll(filteredParams);
+      const response = await activityAPI.getAll(params);
       setActivities(response.data.activities);
     } catch (error) {
       console.error('Failed to fetch activities:', error);

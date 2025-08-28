@@ -77,14 +77,14 @@ router.get('/:id', requirePermission('canViewPermits'), async (req, res) => {
 // Create permit
 router.post('/', [
   requirePermission('canCreatePermits'),
-  body('permit_number').trim().isLength({ min: 1 }).withMessage('Permit number is required'),
+  body('permitNumber').trim().isLength({ min: 1 }).withMessage('Permit number is required'),
   body('date').isISO8601().withMessage('Valid date is required'),
   body('region').trim().isLength({ min: 1 }).withMessage('Region is required'),
   body('location').trim().isLength({ min: 1 }).withMessage('Location is required'),
-  body('carrier_name').trim().isLength({ min: 1 }).withMessage('Carrier name is required'),
-  body('carrier_id').trim().isLength({ min: 1 }).withMessage('Carrier ID is required'),
-  body('request_type').trim().isLength({ min: 1 }).withMessage('Request type is required'),
-  body('vehicle_plate').trim().isLength({ min: 1 }).withMessage('Vehicle plate is required'),
+  body('carrierName').trim().isLength({ min: 1 }).withMessage('Carrier name is required'),
+  body('carrierId').trim().isLength({ min: 1 }).withMessage('Carrier ID is required'),
+  body('requestType').trim().isLength({ min: 1 }).withMessage('Request type is required'),
+  body('vehiclePlate').trim().isLength({ min: 1 }).withMessage('Vehicle plate is required'),
   body('materials').isArray({ min: 1 }).withMessage('At least one material is required')
 ], async (req, res) => {
   try {
@@ -94,7 +94,15 @@ router.post('/', [
     }
 
     const permitData = {
-      ...req.body,
+      permit_number: req.body.permitNumber,
+      date: req.body.date,
+      region: req.body.region,
+      location: req.body.location,
+      carrier_name: req.body.carrierName,
+      carrier_id: req.body.carrierId,
+      request_type: req.body.requestType,
+      vehicle_plate: req.body.vehiclePlate,
+      materials: req.body.materials,
       created_by: req.user.id,
       can_reopen: true
     };
@@ -141,14 +149,14 @@ router.post('/', [
 // Update permit
 router.put('/:id', [
   requirePermission('canEditPermits'),
-  body('permit_number').optional().trim().isLength({ min: 1 }),
+  body('permitNumber').optional().trim().isLength({ min: 1 }),
   body('date').optional().isISO8601(),
   body('region').optional().trim().isLength({ min: 1 }),
   body('location').optional().trim().isLength({ min: 1 }),
-  body('carrier_name').optional().trim().isLength({ min: 1 }),
-  body('carrier_id').optional().trim().isLength({ min: 1 }),
-  body('request_type').optional().trim().isLength({ min: 1 }),
-  body('vehicle_plate').optional().trim().isLength({ min: 1 }),
+  body('carrierName').optional().trim().isLength({ min: 1 }),
+  body('carrierId').optional().trim().isLength({ min: 1 }),
+  body('requestType').optional().trim().isLength({ min: 1 }),
+  body('vehiclePlate').optional().trim().isLength({ min: 1 }),
   body('materials').optional().isArray({ min: 1 })
 ], async (req, res) => {
   try {
@@ -182,9 +190,21 @@ router.put('/:id', [
       return res.status(400).json({ error: 'Cannot edit closed permit' });
     }
 
+    // Convert camelCase to snake_case for database
+    const updateData = {};
+    if (req.body.permitNumber) updateData.permit_number = req.body.permitNumber;
+    if (req.body.date) updateData.date = req.body.date;
+    if (req.body.region) updateData.region = req.body.region;
+    if (req.body.location) updateData.location = req.body.location;
+    if (req.body.carrierName) updateData.carrier_name = req.body.carrierName;
+    if (req.body.carrierId) updateData.carrier_id = req.body.carrierId;
+    if (req.body.requestType) updateData.request_type = req.body.requestType;
+    if (req.body.vehiclePlate) updateData.vehicle_plate = req.body.vehiclePlate;
+    if (req.body.materials) updateData.materials = req.body.materials;
+
     const { data: permit, error } = await supabase
       .from('permits')
-      .update(req.body)
+      .update(updateData)
       .eq('id', id)
       .select()
       .single();
@@ -372,8 +392,7 @@ router.delete('/:id', requirePermission('canDeletePermits'), async (req, res) =>
         user_name: `${req.user.first_name} ${req.user.last_name}`,
         action: 'delete_permit',
         details: `Deleted permit ${existingPermit.permit_number}`,
-        ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
-        user_agent: req.get('User-Agent') || 'unknown'
+        ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown'
       });
 
     res.json({ message: 'Permit deleted successfully' });

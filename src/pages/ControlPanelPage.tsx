@@ -238,7 +238,10 @@ const ControlPanelPage: React.FC = () => {
                   {t('auth.username')}
                 </th>
                 <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('auth.firstName')} / {t('auth.lastName')}
+                  {t('auth.firstName')}
+                </th>
+                <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('auth.lastName')}
                 </th>
                 <th className="px-3 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
                   {t('auth.email')}
@@ -264,7 +267,10 @@ const ControlPanelPage: React.FC = () => {
                     {user.username}
                   </td>
                   <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 text-center">
-                    {user.firstName} {user.lastName}
+                    {user.firstName}
+                  </td>
+                  <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 text-center">
+                    {user.lastName}
                   </td>
                   <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 text-center hidden md:table-cell">
                     {user.email}
@@ -284,7 +290,7 @@ const ControlPanelPage: React.FC = () => {
                     {user.region.length > 2 && ` +${user.region.length - 2} ${t('users.more')}`}
                   </td>
                   <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 text-center hidden lg:table-cell">
-                    {user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : t('users.never')}
+                    {user.last_login ? new Date(user.last_login).toLocaleDateString() : t('users.never')}
                   </td>
                   <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                     <div className="flex items-center justify-center space-x-1 sm:space-x-2">

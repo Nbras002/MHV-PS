@@ -111,22 +111,6 @@ router.post('/login', [
 
     console.log('🎫 JWT token generated for user:', user.username);
 
-    // Log activity
-    const { error: logError } = await supabase
-      .from('activity_logs')
-      .insert({
-        user_id: user.id,
-        user_name: `${user.first_name} ${user.last_name}`,
-        action: 'login',
-        details: 'User logged in successfully',
-        ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
-        user_agent: req.get('User-Agent') || 'unknown'
-      });
-
-    if (logError) {
-      console.log('⚠️ Failed to log activity:', logError.message);
-    }
-
     // Remove password from response
     const { password: _, ...userWithoutPassword } = user;
 
@@ -264,18 +248,6 @@ router.get('/me', authenticateToken, (req, res) => {
 // Logout
 router.post('/logout', authenticateToken, async (req, res) => {
   try {
-    // Log activity
-    await supabase
-      .from('activity_logs')
-      .insert({
-        user_id: req.user.id,
-        user_name: `${req.user.first_name} ${req.user.last_name}`,
-        action: 'logout',
-        details: 'User logged out',
-        ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
-        user_agent: req.get('User-Agent') || 'unknown'
-      });
-
     res.json({ message: 'Logout successful' });
   } catch (error) {
     console.error('Logout error:', error);

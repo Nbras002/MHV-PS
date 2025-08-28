@@ -7,19 +7,13 @@ const router = express.Router();
 // Get activity logs
 router.get('/', requirePermission('canViewActivityLog'), async (req, res) => {
   try {
-    const { search, action, date, limit = 100, offset = 0, excludeActions } = req.query;
+    const { search, action, date, limit = 100, offset = 0 } = req.query;
 
     let query = supabase
       .from('activity_logs')
       .select('*')
       .order('timestamp', { ascending: false })
       .range(offset, offset + limit - 1);
-
-    // Exclude specific actions (like login/logout)
-    if (excludeActions) {
-      const actionsToExclude = Array.isArray(excludeActions) ? excludeActions : [excludeActions];
-      query = query.not('action', 'in', `(${actionsToExclude.join(',')})`);
-    }
 
     if (search) {
       query = query.or(`user_name.ilike.%${search}%,details.ilike.%${search}%`);
@@ -49,12 +43,6 @@ router.get('/', requirePermission('canViewActivityLog'), async (req, res) => {
     let countQuery = supabase
       .from('activity_logs')
       .select('*', { count: 'exact', head: true });
-
-    // Apply same exclusions to count query
-    if (excludeActions) {
-      const actionsToExclude = Array.isArray(excludeActions) ? excludeActions : [excludeActions];
-      countQuery = countQuery.not('action', 'in', `(${actionsToExclude.join(',')})`);
-    }
 
     if (search) {
       countQuery = countQuery.or(`user_name.ilike.%${search}%,details.ilike.%${search}%`);

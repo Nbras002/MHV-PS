@@ -197,8 +197,7 @@ router.delete('/:id', requirePermission('canManageUsers'), async (req, res) => {
         user_name: `${req.user.first_name} ${req.user.last_name}`,
         action: 'delete_user',
         details: `Deleted user ${userToDelete.username}`,
-        ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
-        user_agent: req.get('User-Agent') || 'unknown'
+        ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown'
       });
 
     res.json({ message: 'User deleted successfully' });

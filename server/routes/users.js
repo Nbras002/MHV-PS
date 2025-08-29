@@ -3,7 +3,6 @@ import bcrypt from 'bcryptjs';
 import { body, validationResult } from 'express-validator';
 import { supabase } from '../config/database.js';
 import { requireRole, requirePermission } from '../middleware/auth.js';
-import { parseUserAgent } from '../utils/userAgent.js';
 
 const router = express.Router();
 
@@ -86,7 +85,7 @@ router.post('/', [
         action: 'create_user',
         details: `Created user ${username}`,
         ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
-        user_agent: parseUserAgent(req.get('User-Agent'))
+        user_agent: req.get('User-Agent') || 'unknown'
       });
 
     res.status(201).json({ user: newUser });
@@ -150,7 +149,7 @@ router.put('/:id', [
         action: 'update_user',
         details: `Updated user ${user.username}`,
         ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
-        user_agent: parseUserAgent(req.get('User-Agent'))
+        user_agent: req.get('User-Agent') || 'unknown'
       });
 
     res.json({ user });
@@ -198,8 +197,7 @@ router.delete('/:id', requirePermission('canManageUsers'), async (req, res) => {
         user_name: `${req.user.first_name} ${req.user.last_name}`,
         action: 'delete_user',
         details: `Deleted user ${userToDelete.username}`,
-        ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
-        user_agent: parseUserAgent(req.get('User-Agent'))
+        ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown'
       });
 
     res.json({ message: 'User deleted successfully' });

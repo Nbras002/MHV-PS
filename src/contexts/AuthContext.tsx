@@ -55,16 +55,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const fetchUsers = async () => {
     try {
       const response = await usersAPI.getAll();
-      
-      // Transform snake_case to camelCase for frontend
-      const transformedUsers = response.data.users.map((user: any) => ({
-        ...user,
-        firstName: user.first_name,
-        lastName: user.last_name,
-        lastLogin: user.last_login
-      }));
-      
-      setUsers(transformedUsers);
+      setUsers(response.data.users);
     } catch (error) {
       console.error('Failed to fetch users:', error);
     }
@@ -82,20 +73,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         username: userData?.username
       });
 
-      // Transform snake_case to camelCase for frontend
-      const transformedUser = {
-        ...userData,
-        firstName: userData.first_name,
-        lastName: userData.last_name,
-        lastLogin: userData.last_login
-      };
-
       localStorage.setItem('authToken', token);
-      localStorage.setItem('currentUser', JSON.stringify(transformedUser));
-      setUser(transformedUser);
+      localStorage.setItem('currentUser', JSON.stringify(userData));
+      setUser(userData);
       
       // Fetch users if admin
-      if (transformedUser.role === 'admin') {
+      if (userData.role === 'admin') {
         console.log('👑 AuthContext: User is admin, fetching users');
         await fetchUsers();
       }
@@ -147,19 +130,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const response = await usersAPI.update(userId, updates);
       const updatedUser = response.data.user;
       
-      // Transform snake_case to camelCase for frontend
-      const transformedUser = {
-        ...updatedUser,
-        firstName: updatedUser.first_name,
-        lastName: updatedUser.last_name,
-        lastLogin: updatedUser.last_login
-      };
-      
-      setUsers(prev => prev.map(u => u.id === userId ? transformedUser : u));
+      setUsers(prev => prev.map(u => u.id === userId ? updatedUser : u));
       
       if (user && user.id === userId) {
-        setUser(transformedUser);
-        localStorage.setItem('currentUser', JSON.stringify(transformedUser));
+        setUser(updatedUser);
+        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
       }
     } catch (error) {
       console.error('Update user error:', error);
@@ -171,16 +146,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       const response = await usersAPI.create(userData);
       const newUser = response.data.user;
-      
-      // Transform snake_case to camelCase for frontend
-      const transformedUser = {
-        ...newUser,
-        firstName: newUser.first_name,
-        lastName: newUser.last_name,
-        lastLogin: newUser.last_login
-      };
-      
-      setUsers(prev => [...prev, transformedUser]);
+      setUsers(prev => [...prev, newUser]);
     } catch (error) {
       console.error('Add user error:', error);
       throw error;

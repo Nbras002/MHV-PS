@@ -147,12 +147,15 @@ const ActivityLogPage: React.FC = () => {
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ minWidth: '200px' }}>
                   {t('activityLog.detailsLabel')}
                 </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
+                  User Agent
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {activities.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
                     {t('activityLog.noActivities')}
                   </td>
                 </tr>
@@ -160,7 +163,15 @@ const ActivityLogPage: React.FC = () => {
                 activities.map((activity) => (
                   <tr key={activity.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                      {format(new Date(activity.timestamp), 'yyyy-MM-dd HH:mm:ss')}
+                      {new Date(activity.timestamp).toLocaleString('en-CA', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: false
+                      })}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center">
                       {activity.userName}
@@ -177,7 +188,10 @@ const ActivityLogPage: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500 text-center">
-                      {t(`activityLog.details.${activity.action}`) || activity.details}
+                      {activity.details}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500 text-center hidden lg:table-cell">
+                      {activity.ip || 'Unknown'}
                     </td>
                   </tr>
                 ))

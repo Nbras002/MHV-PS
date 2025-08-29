@@ -2,6 +2,7 @@ import express from 'express';
 import { body, validationResult } from 'express-validator';
 import { supabase } from '../config/database.js';
 import { requirePermission } from '../middleware/auth.js';
+import { parseUserAgent } from '../utils/userAgent.js';
 
 const router = express.Router();
 
@@ -35,10 +36,31 @@ router.get('/', requirePermission('canViewPermits'), async (req, res) => {
     const { data: permits, error } = await query;
 
     if (error) {
+      console.error('Get permits error:', error);
       return res.status(500).json({ error: 'Failed to fetch permits' });
     }
 
-    res.json({ permits });
+    // Transform data to match frontend expectations
+    const transformedPermits = permits.map(permit => ({
+      id: permit.id,
+      permitNumber: permit.permit_number,
+      date: permit.date,
+      region: permit.region,
+      location: permit.location,
+      carrierName: permit.carrier_name,
+      carrierId: permit.carrier_id,
+      requestType: permit.request_type,
+      vehiclePlate: permit.vehicle_plate,
+      materials: permit.materials || [],
+      closedBy: permit.closed_by,
+      closedAt: permit.closed_at,
+      closedByName: permit.closed_by_name,
+      canReopen: permit.can_reopen,
+      createdBy: permit.created_by,
+      createdAt: permit.created_at
+    }));
+
+    res.json({ permits: transformedPermits });
   } catch (error) {
     console.error('Get permits error:', error);
     res.status(500).json({ error: 'Failed to fetch permits' });
@@ -67,7 +89,27 @@ router.get('/:id', requirePermission('canViewPermits'), async (req, res) => {
       }
     }
 
-    res.json({ permit });
+    // Transform data to match frontend expectations
+    const transformedPermit = {
+      id: permit.id,
+      permitNumber: permit.permit_number,
+      date: permit.date,
+      region: permit.region,
+      location: permit.location,
+      carrierName: permit.carrier_name,
+      carrierId: permit.carrier_id,
+      requestType: permit.request_type,
+      vehiclePlate: permit.vehicle_plate,
+      materials: permit.materials || [],
+      closedBy: permit.closed_by,
+      closedAt: permit.closed_at,
+      closedByName: permit.closed_by_name,
+      canReopen: permit.can_reopen,
+      createdBy: permit.created_by,
+      createdAt: permit.created_at
+    };
+
+    res.json({ permit: transformedPermit });
   } catch (error) {
     console.error('Get permit error:', error);
     res.status(500).json({ error: 'Failed to fetch permit' });
@@ -90,9 +132,11 @@ router.post('/', [
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log('Validation errors:', errors.array());
       return res.status(400).json({ errors: errors.array() });
     }
 
+    // Convert frontend camelCase to database snake_case
     const permitData = {
       permit_number: req.body.permitNumber,
       date: req.body.date,
@@ -106,6 +150,8 @@ router.post('/', [
       created_by: req.user.id,
       can_reopen: true
     };
+
+    console.log('Creating permit with data:', permitData);
 
     // Check if user can create permits in this region
     if (req.user.role !== 'admin' && req.user.role !== 'manager') {
@@ -121,11 +167,14 @@ router.post('/', [
       .single();
 
     if (error) {
+      console.error('Database error creating permit:', error);
       if (error.code === '23505') {
         return res.status(409).json({ error: 'Permit number already exists' });
       }
       return res.status(500).json({ error: 'Failed to create permit' });
     }
+
+    console.log('Permit created successfully:', permit);
 
     // Log activity
     await supabase
@@ -136,10 +185,30 @@ router.post('/', [
         action: 'create_permit',
         details: `Created permit ${permit.permit_number}`,
         ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
-        user_agent: req.get('User-Agent') || 'unknown'
+        user_agent: parseUserAgent(req.get('User-Agent'))
       });
 
-    res.status(201).json({ permit });
+    // Transform response to match frontend expectations
+    const transformedPermit = {
+      id: permit.id,
+      permitNumber: permit.permit_number,
+      date: permit.date,
+      region: permit.region,
+      location: permit.location,
+      carrierName: permit.carrier_name,
+      carrierId: permit.carrier_id,
+      requestType: permit.request_type,
+      vehiclePlate: permit.vehicle_plate,
+      materials: permit.materials || [],
+      closedBy: permit.closed_by,
+      closedAt: permit.closed_at,
+      closedByName: permit.closed_by_name,
+      canReopen: permit.can_reopen,
+      createdBy: permit.created_by,
+      createdAt: permit.created_at
+    };
+
+    res.status(201).json({ permit: transformedPermit });
   } catch (error) {
     console.error('Create permit error:', error);
     res.status(500).json({ error: 'Failed to create permit' });
@@ -222,10 +291,30 @@ router.put('/:id', [
         action: 'update_permit',
         details: `Updated permit ${permit.permit_number}`,
         ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
-        user_agent: req.get('User-Agent') || 'unknown'
+        user_agent: parseUserAgent(req.get('User-Agent'))
       });
 
-    res.json({ permit });
+    // Transform response to match frontend expectations
+    const transformedPermit = {
+      id: permit.id,
+      permitNumber: permit.permit_number,
+      date: permit.date,
+      region: permit.region,
+      location: permit.location,
+      carrierName: permit.carrier_name,
+      carrierId: permit.carrier_id,
+      requestType: permit.request_type,
+      vehiclePlate: permit.vehicle_plate,
+      materials: permit.materials || [],
+      closedBy: permit.closed_by,
+      closedAt: permit.closed_at,
+      closedByName: permit.closed_by_name,
+      canReopen: permit.can_reopen,
+      createdBy: permit.created_by,
+      createdAt: permit.created_at
+    };
+
+    res.json({ permit: transformedPermit });
   } catch (error) {
     console.error('Update permit error:', error);
     res.status(500).json({ error: 'Failed to update permit' });
@@ -263,7 +352,7 @@ router.patch('/:id/close', requirePermission('canClosePermits'), async (req, res
       .from('permits')
       .update({
         closed_by: req.user.id,
-        closed_by_name: `${req.user.first_name} ${req.user.last_name} [${req.user.username}]`,
+        closed_by_name: `${req.user.first_name} ${req.user.last_name}`,
         closed_at: new Date().toISOString(),
         can_reopen: true
       })
@@ -272,6 +361,7 @@ router.patch('/:id/close', requirePermission('canClosePermits'), async (req, res
       .single();
 
     if (error) {
+      console.error('Database error closing permit:', error);
       return res.status(500).json({ error: 'Failed to close permit' });
     }
 
@@ -284,10 +374,30 @@ router.patch('/:id/close', requirePermission('canClosePermits'), async (req, res
         action: 'close_permit',
         details: `Closed permit ${permit.permit_number}`,
         ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
-        user_agent: req.get('User-Agent') || 'unknown'
+        user_agent: parseUserAgent(req.get('User-Agent'))
       });
 
-    res.json({ permit });
+    // Transform response to match frontend expectations
+    const transformedPermit = {
+      id: permit.id,
+      permitNumber: permit.permit_number,
+      date: permit.date,
+      region: permit.region,
+      location: permit.location,
+      carrierName: permit.carrier_name,
+      carrierId: permit.carrier_id,
+      requestType: permit.request_type,
+      vehiclePlate: permit.vehicle_plate,
+      materials: permit.materials || [],
+      closedBy: permit.closed_by,
+      closedAt: permit.closed_at,
+      closedByName: permit.closed_by_name,
+      canReopen: permit.can_reopen,
+      createdBy: permit.created_by,
+      createdAt: permit.created_at
+    };
+
+    res.json({ permit: transformedPermit });
   } catch (error) {
     console.error('Close permit error:', error);
     res.status(500).json({ error: 'Failed to close permit' });
@@ -337,6 +447,7 @@ router.patch('/:id/reopen', requirePermission('canReopenPermits'), async (req, r
       .single();
 
     if (error) {
+      console.error('Database error reopening permit:', error);
       return res.status(500).json({ error: 'Failed to reopen permit' });
     }
 
@@ -349,10 +460,30 @@ router.patch('/:id/reopen', requirePermission('canReopenPermits'), async (req, r
         action: 'reopen_permit',
         details: `Reopened permit ${permit.permit_number}`,
         ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
-        user_agent: req.get('User-Agent') || 'unknown'
+        user_agent: parseUserAgent(req.get('User-Agent'))
       });
 
-    res.json({ permit });
+    // Transform response to match frontend expectations
+    const transformedPermit = {
+      id: permit.id,
+      permitNumber: permit.permit_number,
+      date: permit.date,
+      region: permit.region,
+      location: permit.location,
+      carrierName: permit.carrier_name,
+      carrierId: permit.carrier_id,
+      requestType: permit.request_type,
+      vehiclePlate: permit.vehicle_plate,
+      materials: permit.materials || [],
+      closedBy: permit.closed_by,
+      closedAt: permit.closed_at,
+      closedByName: permit.closed_by_name,
+      canReopen: permit.can_reopen,
+      createdBy: permit.created_by,
+      createdAt: permit.created_at
+    };
+
+    res.json({ permit: transformedPermit });
   } catch (error) {
     console.error('Reopen permit error:', error);
     res.status(500).json({ error: 'Failed to reopen permit' });
@@ -392,7 +523,8 @@ router.delete('/:id', requirePermission('canDeletePermits'), async (req, res) =>
         user_name: `${req.user.first_name} ${req.user.last_name}`,
         action: 'delete_permit',
         details: `Deleted permit ${existingPermit.permit_number}`,
-        ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown'
+        ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
+        user_agent: parseUserAgent(req.get('User-Agent'))
       });
 
     res.json({ message: 'Permit deleted successfully' });

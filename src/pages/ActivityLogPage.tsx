@@ -160,7 +160,7 @@ const ActivityLogPage: React.FC = () => {
                 activities.map((activity) => (
                   <tr key={activity.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                      {format(new Date(activity.timestamp), 'yyyy-MM-dd HH:mm:ss')}
+                      {new Date(activity.timestamp).toLocaleDateString('en-CA')} {new Date(activity.timestamp).toLocaleTimeString('en-GB', { hour12: false })}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center">
                       {activity.userName}

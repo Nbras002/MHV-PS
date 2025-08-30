@@ -30,7 +30,8 @@ export const usePermits = () => {
     try {
       const response = await permitsAPI.create(permitData);
       const newPermit = response.data.permit;
-      setPermits(prev => [newPermit, ...prev]);
+      // Fetch all permits to ensure we have the latest data with proper formatting
+      await fetchPermits();
       return newPermit;
     } catch (error) {
       console.error('Add permit error:', error);
@@ -42,9 +43,8 @@ export const usePermits = () => {
     try {
       const response = await permitsAPI.update(permitId, updates);
       const updatedPermit = response.data.permit;
-      setPermits(prev => prev.map(permit => 
-        permit.id === permitId ? updatedPermit : permit
-      ));
+      // Fetch all permits to ensure we have the latest data with proper formatting
+      await fetchPermits();
       return updatedPermit;
     } catch (error) {
       console.error('Update permit error:', error);
@@ -66,9 +66,8 @@ export const usePermits = () => {
     try {
       const response = await permitsAPI.close(permitId);
       const updatedPermit = response.data.permit;
-      setPermits(prev => prev.map(permit => 
-        permit.id === permitId ? updatedPermit : permit
-      ));
+      // Fetch all permits to ensure we have the latest data with proper formatting
+      await fetchPermits();
       return updatedPermit;
     } catch (error) {
       console.error('Close permit error:', error);
@@ -80,9 +79,8 @@ export const usePermits = () => {
     try {
       const response = await permitsAPI.reopen(permitId);
       const updatedPermit = response.data.permit;
-      setPermits(prev => prev.map(permit => 
-        permit.id === permitId ? updatedPermit : permit
-      ));
+      // Fetch all permits to ensure we have the latest data with proper formatting
+      await fetchPermits();
       return true;
     } catch (error) {
       console.error('Reopen permit error:', error);

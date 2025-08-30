@@ -38,7 +38,27 @@ router.get('/', requirePermission('canViewPermits'), async (req, res) => {
       return res.status(500).json({ error: 'Failed to fetch permits' });
     }
 
-    res.json({ permits });
+    // Convert database format to frontend format
+    const formattedPermits = permits.map(permit => ({
+      id: permit.id,
+      permitNumber: permit.permit_number,
+      date: permit.date,
+      region: permit.region,
+      location: permit.location,
+      carrierName: permit.carrier_name,
+      carrierId: permit.carrier_id,
+      requestType: permit.request_type,
+      vehiclePlate: permit.vehicle_plate,
+      materials: permit.materials,
+      closedBy: permit.closed_by,
+      closedAt: permit.closed_at,
+      closedByName: permit.closed_by_name,
+      canReopen: permit.can_reopen,
+      createdBy: permit.created_by,
+      createdAt: permit.created_at
+    }));
+
+    res.json({ permits: formattedPermits });
   } catch (error) {
     console.error('Get permits error:', error);
     res.status(500).json({ error: 'Failed to fetch permits' });
@@ -67,7 +87,27 @@ router.get('/:id', requirePermission('canViewPermits'), async (req, res) => {
       }
     }
 
-    res.json({ permit });
+    // Convert database format to frontend format
+    const formattedPermit = {
+      id: permit.id,
+      permitNumber: permit.permit_number,
+      date: permit.date,
+      region: permit.region,
+      location: permit.location,
+      carrierName: permit.carrier_name,
+      carrierId: permit.carrier_id,
+      requestType: permit.request_type,
+      vehiclePlate: permit.vehicle_plate,
+      materials: permit.materials,
+      closedBy: permit.closed_by,
+      closedAt: permit.closed_at,
+      closedByName: permit.closed_by_name,
+      canReopen: permit.can_reopen,
+      createdBy: permit.created_by,
+      createdAt: permit.created_at
+    };
+
+    res.json({ permit: formattedPermit });
   } catch (error) {
     console.error('Get permit error:', error);
     res.status(500).json({ error: 'Failed to fetch permit' });
@@ -127,6 +167,26 @@ router.post('/', [
       return res.status(500).json({ error: 'Failed to create permit' });
     }
 
+    // Convert database format to frontend format
+    const formattedPermit = {
+      id: permit.id,
+      permitNumber: permit.permit_number,
+      date: permit.date,
+      region: permit.region,
+      location: permit.location,
+      carrierName: permit.carrier_name,
+      carrierId: permit.carrier_id,
+      requestType: permit.request_type,
+      vehiclePlate: permit.vehicle_plate,
+      materials: permit.materials,
+      closedBy: permit.closed_by,
+      closedAt: permit.closed_at,
+      closedByName: permit.closed_by_name,
+      canReopen: permit.can_reopen,
+      createdBy: permit.created_by,
+      createdAt: permit.created_at
+    };
+
     // Log activity
     await supabase
       .from('activity_logs')
@@ -139,7 +199,7 @@ router.post('/', [
         user_agent: req.get('User-Agent') || 'unknown'
       });
 
-    res.status(201).json({ permit });
+    res.status(201).json({ permit: formattedPermit });
   } catch (error) {
     console.error('Create permit error:', error);
     res.status(500).json({ error: 'Failed to create permit' });
@@ -213,6 +273,26 @@ router.put('/:id', [
       return res.status(500).json({ error: 'Failed to update permit' });
     }
 
+    // Convert database format to frontend format
+    const formattedPermit = {
+      id: permit.id,
+      permitNumber: permit.permit_number,
+      date: permit.date,
+      region: permit.region,
+      location: permit.location,
+      carrierName: permit.carrier_name,
+      carrierId: permit.carrier_id,
+      requestType: permit.request_type,
+      vehiclePlate: permit.vehicle_plate,
+      materials: permit.materials,
+      closedBy: permit.closed_by,
+      closedAt: permit.closed_at,
+      closedByName: permit.closed_by_name,
+      canReopen: permit.can_reopen,
+      createdBy: permit.created_by,
+      createdAt: permit.created_at
+    };
+
     // Log activity
     await supabase
       .from('activity_logs')
@@ -225,7 +305,7 @@ router.put('/:id', [
         user_agent: req.get('User-Agent') || 'unknown'
       });
 
-    res.json({ permit });
+    res.json({ permit: formattedPermit });
   } catch (error) {
     console.error('Update permit error:', error);
     res.status(500).json({ error: 'Failed to update permit' });
@@ -275,6 +355,26 @@ router.patch('/:id/close', requirePermission('canClosePermits'), async (req, res
       return res.status(500).json({ error: 'Failed to close permit' });
     }
 
+    // Convert database format to frontend format
+    const formattedPermit = {
+      id: permit.id,
+      permitNumber: permit.permit_number,
+      date: permit.date,
+      region: permit.region,
+      location: permit.location,
+      carrierName: permit.carrier_name,
+      carrierId: permit.carrier_id,
+      requestType: permit.request_type,
+      vehiclePlate: permit.vehicle_plate,
+      materials: permit.materials,
+      closedBy: permit.closed_by,
+      closedAt: permit.closed_at,
+      closedByName: permit.closed_by_name,
+      canReopen: permit.can_reopen,
+      createdBy: permit.created_by,
+      createdAt: permit.created_at
+    };
+
     // Log activity
     await supabase
       .from('activity_logs')
@@ -287,7 +387,7 @@ router.patch('/:id/close', requirePermission('canClosePermits'), async (req, res
         user_agent: req.get('User-Agent') || 'unknown'
       });
 
-    res.json({ permit });
+    res.json({ permit: formattedPermit });
   } catch (error) {
     console.error('Close permit error:', error);
     res.status(500).json({ error: 'Failed to close permit' });
@@ -340,6 +440,26 @@ router.patch('/:id/reopen', requirePermission('canReopenPermits'), async (req, r
       return res.status(500).json({ error: 'Failed to reopen permit' });
     }
 
+    // Convert database format to frontend format
+    const formattedPermit = {
+      id: permit.id,
+      permitNumber: permit.permit_number,
+      date: permit.date,
+      region: permit.region,
+      location: permit.location,
+      carrierName: permit.carrier_name,
+      carrierId: permit.carrier_id,
+      requestType: permit.request_type,
+      vehiclePlate: permit.vehicle_plate,
+      materials: permit.materials,
+      closedBy: permit.closed_by,
+      closedAt: permit.closed_at,
+      closedByName: permit.closed_by_name,
+      canReopen: permit.can_reopen,
+      createdBy: permit.created_by,
+      createdAt: permit.created_at
+    };
+
     // Log activity
     await supabase
       .from('activity_logs')
@@ -352,7 +472,7 @@ router.patch('/:id/reopen', requirePermission('canReopenPermits'), async (req, r
         user_agent: req.get('User-Agent') || 'unknown'
       });
 
-    res.json({ permit });
+    res.json({ permit: formattedPermit });
   } catch (error) {
     console.error('Reopen permit error:', error);
     res.status(500).json({ error: 'Failed to reopen permit' });

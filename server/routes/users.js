@@ -18,7 +18,21 @@ router.get('/', requirePermission('canManageUsers'), async (req, res) => {
       return res.status(500).json({ error: 'Failed to fetch users' });
     }
 
-    res.json({ users });
+    // Convert database format to frontend format
+    const formattedUsers = users.map(user => ({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      region: user.region,
+      role: user.role,
+      permissions: user.permissions,
+      createdAt: user.created_at,
+      lastLogin: user.last_login
+    }));
+
+    res.json({ users: formattedUsers });
   } catch (error) {
     console.error('Get users error:', error);
     res.status(500).json({ error: 'Failed to fetch users' });
@@ -88,7 +102,21 @@ router.post('/', [
         user_agent: req.get('User-Agent') || 'unknown'
       });
 
-    res.status(201).json({ user: newUser });
+    // Convert database format to frontend format
+    const formattedUser = {
+      id: newUser.id,
+      username: newUser.username,
+      email: newUser.email,
+      firstName: newUser.first_name,
+      lastName: newUser.last_name,
+      region: newUser.region,
+      role: newUser.role,
+      permissions: newUser.permissions,
+      createdAt: newUser.created_at,
+      lastLogin: newUser.last_login
+    };
+
+    res.status(201).json({ user: formattedUser });
   } catch (error) {
     console.error('Create user error:', error);
     res.status(500).json({ error: 'Failed to create user' });
@@ -140,6 +168,20 @@ router.put('/:id', [
       return res.status(500).json({ error: 'Failed to update user' });
     }
 
+    // Convert database format to frontend format
+    const formattedUser = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      region: user.region,
+      role: user.role,
+      permissions: user.permissions,
+      createdAt: user.created_at,
+      lastLogin: user.last_login
+    };
+
     // Log activity
     await supabase
       .from('activity_logs')
@@ -152,7 +194,7 @@ router.put('/:id', [
         user_agent: req.get('User-Agent') || 'unknown'
       });
 
-    res.json({ user });
+    res.json({ user: formattedUser });
   } catch (error) {
     console.error('Update user error:', error);
     res.status(500).json({ error: 'Failed to update user' });

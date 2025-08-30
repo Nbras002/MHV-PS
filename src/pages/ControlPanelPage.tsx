@@ -290,7 +290,7 @@ const ControlPanelPage: React.FC = () => {
                     {user.region.length > 2 && ` +${user.region.length - 2} ${t('users.more')}`}
                   </td>
                   <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 text-center hidden lg:table-cell">
-                    {user.last_login ? new Date(user.last_login).toLocaleDateString() : t('users.never')}
+                    {user.lastLogin ? new Date(user.lastLogin).toLocaleDateString('en-CA') : t('users.never')}
                   </td>
                   <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                     <div className="flex items-center justify-center space-x-1 sm:space-x-2">

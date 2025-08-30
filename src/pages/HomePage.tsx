@@ -396,7 +396,7 @@ const HomePage: React.FC = () => {
                       {permit.permitNumber}
                     </td>
                     <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 text-center">
-                      {new Date(permit.date).toLocaleDateString()}
+                      {new Date(permit.date).toLocaleDateString('en-CA')}
                     </td>
                     <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 text-center hidden sm:table-cell">
                       {t(`regions.${permit.region}`)}
@@ -764,7 +764,7 @@ const HomePage: React.FC = () => {
                   <label className="block text-sm font-medium text-gray-500 mb-1">
                     {t('permits.date')}
                   </label>
-                  <p className="text-sm text-gray-900">{new Date(viewingPermit.date).toLocaleDateString()}</p>
+                  <p className="text-sm text-gray-900">{new Date(viewingPermit.date).toLocaleDateString('en-CA')}</p>
                 </div>
 
                 <div>
@@ -835,7 +835,7 @@ const HomePage: React.FC = () => {
                       <label className="block text-sm font-medium text-gray-500 mb-1">
                         {t('permits.closedAt')}
                       </label>
-                      <p className="text-sm text-gray-900">{new Date(viewingPermit.closedAt).toLocaleString()}</p>
+                      <p className="text-sm text-gray-900">{new Date(viewingPermit.closedAt).toLocaleDateString('en-CA')} {new Date(viewingPermit.closedAt).toLocaleTimeString('en-GB', { hour12: false })}</p>
                     </div>
                   </>
                 )}

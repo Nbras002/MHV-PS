@@ -88,14 +88,14 @@ const Navigation: React.FC = () => {
                   EN
                 </button>
               </div>
-              <button
-                onClick={() => handleNavigation('/')}
-                className="flex items-center space-x-1 sm:space-x-2 text-gray-700 hover:text-purple-600 transition-colors"
-              >
-                <Home className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="text-sm sm:text-base hidden sm:inline">{t('nav.home')}</span>
-              </button>
             </div>
+            <button
+              onClick={() => handleNavigation('/')}
+              className="flex items-center space-x-1 sm:space-x-2 text-gray-700 hover:text-purple-600 transition-colors mx-6"
+            >
+              <Home className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="text-sm sm:text-base hidden sm:inline">{t('nav.home')}</span>
+            </button>
 
             {canAccessControlPanel && (
               <button

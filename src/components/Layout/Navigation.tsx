@@ -91,7 +91,7 @@ const Navigation: React.FC = () => {
 
             <button
               onClick={() => handleNavigation('/')}
-              className="flex items-center space-x-1 sm:space-x-2 text-gray-700 hover:text-purple-600 transition-colors"
+              className="flex items-center space-x-1 sm:space-x-2 text-gray-700 hover:text-purple-600 transition-colors ml-4 lg:ml-6"
             >
               <Home className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="text-sm sm:text-base hidden sm:inline">{t('nav.home')}</span>

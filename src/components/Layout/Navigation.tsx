@@ -40,7 +40,32 @@ const Navigation: React.FC = () => {
 
           <div className={`flex items-center space-x-2 sm:space-x-4 lg:space-x-6 ${isRTL ? 'space-x-reverse' : ''}`}>
             {/* Language Toggle */}
-            <div className="flex items-center bg-gray-100 rounded-lg p-1 mr-4">
+            <div className="hidden lg:flex items-center bg-white rounded-lg border border-gray-200 p-1 mr-4">
+              <Globe className="w-3 h-3 text-gray-500 mr-1" />
+              <button
+                onClick={() => setLanguage('ar')}
+                className={`px-3 py-1 rounded text-sm font-medium transition-all ${
+                  language === 'ar'
+                    ? 'bg-purple-600 text-white'
+                    : 'text-gray-600 hover:text-purple-600'
+                }`}
+              >
+                العربية
+              </button>
+              <button
+                onClick={() => setLanguage('en')}
+                className={`px-3 py-1 rounded text-sm font-medium transition-all ${
+                  language === 'en'
+                    ? 'bg-purple-600 text-white'
+                    : 'text-gray-600 hover:text-purple-600'
+                }`}
+              >
+                English
+              </button>
+            </div>
+            
+            {/* Mobile Language Toggle */}
+            <div className="flex lg:hidden items-center bg-gray-100 rounded-lg p-1 mr-2">
               <Globe className="w-3 h-3 text-gray-500 mr-1" />
               <button
                 onClick={() => setLanguage('ar')}
@@ -103,8 +128,8 @@ const Navigation: React.FC = () => {
             )}
 
             <div className="flex items-center space-x-2 sm:space-x-4">
-              <div className="text-xs sm:text-sm text-gray-600 hidden md:block">
-                <span className="font-medium">{user.firstName} {user.lastName}</span>
+              <div className="text-xs sm:text-sm text-gray-600 hidden sm:block">
+                <span className="font-medium">{user.firstName || user.first_name} {user.lastName || user.last_name}</span>
                 <span className="block text-xs text-gray-500 hidden lg:block">{t(`roles.${user.role}`)}</span>
               </div>
               <button

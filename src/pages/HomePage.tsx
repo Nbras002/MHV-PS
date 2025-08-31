@@ -63,12 +63,25 @@ const HomePage: React.FC = () => {
   const canClose = ['admin', 'manager', 'security_officer'].includes(user?.role || '');
   const canExport = ['admin', 'manager'].includes(user?.role || '');
 
-  // Auto-disable vehicle plate for material-only requests
+  // Auto-disable vehicle plate for material-only requests and materials for heavy vehicle entrance/exit
   useEffect(() => {
     if (newPermit.requestType === 'material_entrance' || newPermit.requestType === 'material_exit') {
       setNewPermit(prev => ({ ...prev, vehiclePlate: 'N/A' }));
     } else if (newPermit.vehiclePlate === 'N/A') {
       setNewPermit(prev => ({ ...prev, vehiclePlate: '' }));
+    }
+    
+    // Disable materials for heavy vehicle entrance/exit
+    if (newPermit.requestType === 'heavy_vehicle_entrance_exit') {
+      setNewPermit(prev => ({ 
+        ...prev, 
+        materials: [{ id: '1', description: 'N/A', serialNumber: 'N/A' }]
+      }));
+    } else if (newPermit.materials.length === 1 && newPermit.materials[0].description === 'N/A') {
+      setNewPermit(prev => ({ 
+        ...prev, 
+        materials: [{ id: '1', description: '', serialNumber: '' }]
+      }));
     }
   }, [newPermit.requestType]);
 
@@ -154,7 +167,7 @@ const HomePage: React.FC = () => {
   };
 
   const handleDelete = async (permitId: string) => {
-    if (window.confirm(t('permits.deleteConfirm'))) {
+    if (window.confirm(`${t('permits.delete')}\n\n${t('permits.deleteConfirm')}`)) {
       try {
         await deletePermit(permitId);
         logActivity('delete_permit', `Deleted permit`);
@@ -165,7 +178,7 @@ const HomePage: React.FC = () => {
   };
 
   const handleClose = async (permit: Permit) => {
-    if (window.confirm(t('permits.closeConfirm'))) {
+    if (window.confirm(`${t('permits.closePermit')}\n\n${t('permits.closeConfirm')}`)) {
       try {
         await closePermit(permit.id);
         logActivity('close_permit', `Closed permit ${permit.permitNumber}`);
@@ -176,7 +189,7 @@ const HomePage: React.FC = () => {
   };
 
   const handleReopen = async (permit: Permit) => {
-    if (window.confirm(t('permits.reopenConfirm'))) {
+    if (window.confirm(`${t('permits.reopenPermit')}\n\n${t('permits.reopenConfirm')}`)) {
       try {
         const success = await reopenPermit(permit.id);
         if (success) {
@@ -396,7 +409,7 @@ const HomePage: React.FC = () => {
                       {permit.permitNumber}
                     </td>
                     <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 text-center">
-                      {new Date(permit.date).toLocaleDateString('en-CA')}
+                      {new Date(permit.date).toLocaleDateString('en-GB')}
                     </td>
                     <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 text-center hidden sm:table-cell">
                       {t(`regions.${permit.region}`)}
@@ -654,15 +667,17 @@ const HomePage: React.FC = () => {
                     <label className="block text-sm font-medium text-gray-700">
                       {t('permits.materials')}
                     </label>
-                    <button
-                      type="button"
-                      onClick={addMaterial}
-                      className="flex items-center space-x-2 text-purple-600 hover:text-purple-700 text-sm"
-                      disabled={submitting}
-                    >
-                      <Plus className="w-4 h-4" />
-                      <span>{t('permits.addMaterial')}</span>
-                    </button>
+                    {newPermit.requestType !== 'heavy_vehicle_entrance_exit' && (
+                      <button
+                        type="button"
+                        onClick={addMaterial}
+                        className="flex items-center space-x-2 text-purple-600 hover:text-purple-700 text-sm"
+                        disabled={submitting}
+                      >
+                        <Plus className="w-4 h-4" />
+                        <span>{t('permits.addMaterial')}</span>
+                      </button>
+                    )}
                   </div>
 
                   <div className="space-y-3">
@@ -676,7 +691,7 @@ const HomePage: React.FC = () => {
                             onChange={(e) => updateMaterial(material.id, 'description', e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                             required
-                            disabled={submitting}
+                            disabled={submitting || newPermit.requestType === 'heavy_vehicle_entrance_exit'}
                           />
                         </div>
                         <div className="flex-1">
@@ -687,10 +702,10 @@ const HomePage: React.FC = () => {
                             onChange={(e) => updateMaterial(material.id, 'serialNumber', e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                             required
-                            disabled={submitting}
+                            disabled={submitting || newPermit.requestType === 'heavy_vehicle_entrance_exit'}
                           />
                         </div>
-                        {newPermit.materials.length > 1 && (
+                        {newPermit.materials.length > 1 && newPermit.requestType !== 'heavy_vehicle_entrance_exit' && (
                           <button
                             type="button"
                             onClick={() => removeMaterial(material.id)}
@@ -764,7 +779,7 @@ const HomePage: React.FC = () => {
                   <label className="block text-sm font-medium text-gray-500 mb-1">
                     {t('permits.date')}
                   </label>
-                  <p className="text-sm text-gray-900">{new Date(viewingPermit.date).toLocaleDateString('en-CA')}</p>
+                  <p className="text-sm text-gray-900">{new Date(viewingPermit.date).toLocaleDateString('en-GB')}</p>
                 </div>
 
                 <div>
@@ -835,7 +850,7 @@ const HomePage: React.FC = () => {
                       <label className="block text-sm font-medium text-gray-500 mb-1">
                         {t('permits.closedAt')}
                       </label>
-                      <p className="text-sm text-gray-900">{new Date(viewingPermit.closedAt).toLocaleDateString('en-CA')} {new Date(viewingPermit.closedAt).toLocaleTimeString('en-GB', { hour12: false })}</p>
+                      <p className="text-sm text-gray-900">{new Date(viewingPermit.closedAt).toLocaleDateString('en-GB')} {new Date(viewingPermit.closedAt).toLocaleTimeString('en-GB', { hour12: false })}</p>
                     </div>
                   </>
                 )}

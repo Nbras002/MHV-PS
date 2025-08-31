@@ -156,7 +156,7 @@ const ControlPanelPage: React.FC = () => {
   };
 
   const handleDelete = async (userId: string, username: string) => {
-    if (window.confirm(t('users.deleteConfirm'))) {
+    if (window.confirm(`${t('permits.delete')} ${t('auth.username')}\n\n${t('users.deleteConfirm')}`)) {
       try {
         await deleteUser(userId);
         alert(t('users.userDeleted'));
@@ -290,7 +290,7 @@ const ControlPanelPage: React.FC = () => {
                     {user.region.length > 2 && ` +${user.region.length - 2} ${t('users.more')}`}
                   </td>
                   <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 text-center hidden lg:table-cell">
-                    {user.lastLogin ? new Date(user.lastLogin).toLocaleDateString('en-CA') : t('users.never')}
+                    {user.lastLogin ? new Date(user.lastLogin).toLocaleDateString('en-GB') : t('users.never')}
                   </td>
                   <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                     <div className="flex items-center justify-center space-x-1 sm:space-x-2">

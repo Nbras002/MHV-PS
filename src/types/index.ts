@@ -120,6 +120,7 @@ export interface ActivityLog {
   timestamp: string;
   ip?: string;
   userAgent?: string;
+  userAgent?: string;
 }
 
 export interface Statistics {

@@ -11,7 +11,16 @@ router.get('/', requirePermission('canViewActivityLog'), async (req, res) => {
 
     let query = supabase
       .from('activity_logs')
-      .select('*')
+      .select(`
+        id,
+        user_id,
+        user_name,
+        action,
+        details,
+        timestamp,
+        ip,
+        user_agent
+      `)
       .order('timestamp', { ascending: false })
       .range(offset, offset + limit - 1);
 
@@ -38,6 +47,18 @@ router.get('/', requirePermission('canViewActivityLog'), async (req, res) => {
     if (error) {
       return res.status(500).json({ error: 'Failed to fetch activity logs' });
     }
+
+    // Format activities for frontend
+    const formattedActivities = activities.map(activity => ({
+      id: activity.id,
+      userId: activity.user_id,
+      userName: activity.user_name,
+      action: activity.action,
+      details: activity.details,
+      timestamp: activity.timestamp,
+      ip: activity.ip,
+      userAgent: activity.user_agent
+    }));
 
     // Get total count for pagination
     let countQuery = supabase
@@ -69,7 +90,7 @@ router.get('/', requirePermission('canViewActivityLog'), async (req, res) => {
     }
 
     res.json({ 
-      activities,
+      activities: formattedActivities,
       total: count,
       limit: parseInt(limit),
       offset: parseInt(offset)

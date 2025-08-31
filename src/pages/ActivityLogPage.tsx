@@ -73,7 +73,7 @@ const ActivityLogPage: React.FC = () => {
         </div>
         <button
           onClick={() => fetchActivities()}
-          className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700"
+          className="flex items-center space-x-2 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
         >
           <RefreshCw className="w-4 h-4" />
           <span>{t('common.refresh')}</span>
@@ -160,10 +160,10 @@ const ActivityLogPage: React.FC = () => {
                 activities.map((activity) => (
                   <tr key={activity.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                      {new Date(activity.timestamp).toLocaleDateString('en-CA')} {new Date(activity.timestamp).toLocaleTimeString('en-GB', { hour12: false })}
+                      {new Date(activity.timestamp).toLocaleDateString('en-GB')} {new Date(activity.timestamp).toLocaleTimeString('en-GB', { hour12: false })}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center">
-                      {activity.userName}
+                      {activity.userName || activity.user_name}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${

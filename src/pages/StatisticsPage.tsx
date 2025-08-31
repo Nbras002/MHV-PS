@@ -60,7 +60,7 @@ const StatisticsPage: React.FC = () => {
           <p className="text-gray-600">{t('statistics.noData')}</p>
           <button
             onClick={fetchStatistics}
-            className="mt-4 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700"
+            className="mt-4 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
           >
             {t('common.refresh')}
           </button>
@@ -93,7 +93,7 @@ const StatisticsPage: React.FC = () => {
         </div>
         <button
           onClick={fetchStatistics}
-          className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700"
+          className="flex items-center space-x-2 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
         >
           <RefreshCw className="w-4 h-4" />
           <span>{t('common.refresh')}</span>

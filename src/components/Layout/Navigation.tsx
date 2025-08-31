@@ -39,8 +39,8 @@ const Navigation: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-4 lg:gap-6">
+            {/* زر تبديل اللغة منفصل */}
             <div className={`flex items-center ${isRTL ? 'flex-row-reverse' : ''} gap-4 lg:gap-6`}>
-              {/* Language Toggle */}
               <div className="hidden lg:flex items-center bg-white rounded-lg border border-gray-200 p-1">
                 <Globe className="w-3 h-3 text-gray-500 mr-1" />
                 <button
@@ -64,7 +64,6 @@ const Navigation: React.FC = () => {
                   English
                 </button>
               </div>
-              {/* Mobile Language Toggle */}
               <div className="flex lg:hidden items-center bg-gray-100 rounded-lg p-1">
                 <Globe className="w-3 h-3 text-gray-500 mr-1" />
                 <button
@@ -89,13 +88,43 @@ const Navigation: React.FC = () => {
                 </button>
               </div>
             </div>
-            <button
-              onClick={() => handleNavigation('/')}
-              className="flex items-center space-x-1 sm:space-x-2 text-gray-700 hover:text-purple-600 transition-colors mx-6"
-            >
-              <Home className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="text-sm sm:text-base hidden sm:inline">{t('nav.home')}</span>
-            </button>
+            {/* باقي الأزرار مع زر الرئيسية بجوار لوحة التحكم */}
+            <div className="flex items-center gap-4 lg:gap-6">
+              <button
+                onClick={() => handleNavigation('/')}
+                className="flex items-center space-x-1 sm:space-x-2 text-gray-700 hover:text-purple-600 transition-colors"
+              >
+                <Home className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="text-sm sm:text-base hidden sm:inline">{t('nav.home')}</span>
+              </button>
+              {canAccessControlPanel && (
+                <button
+                  onClick={() => handleNavigation('/control-panel')}
+                  className="flex items-center space-x-1 sm:space-x-2 text-gray-700 hover:text-purple-600 transition-colors"
+                >
+                  <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="text-sm sm:text-base hidden sm:inline">{t('nav.controlPanel')}</span>
+                </button>
+              )}
+              {canAccessStatistics && (
+                <button
+                  onClick={() => handleNavigation('/statistics')}
+                  className="flex items-center space-x-1 sm:space-x-2 text-gray-700 hover:text-purple-600 transition-colors"
+                >
+                  <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="text-sm sm:text-base hidden sm:inline">{t('nav.statistics')}</span>
+                </button>
+              )}
+              {canAccessActivityLog && (
+                <button
+                  onClick={() => handleNavigation('/activity-log')}
+                  className="flex items-center space-x-1 sm:space-x-2 text-gray-700 hover:text-purple-600 transition-colors"
+                >
+                  <Activity className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="text-sm sm:text-base hidden sm:inline">{t('nav.activityLog')}</span>
+                </button>
+              )}
+            </div>
 
             {canAccessControlPanel && (
               <button

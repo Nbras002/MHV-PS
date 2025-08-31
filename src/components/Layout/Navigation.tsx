@@ -38,60 +38,60 @@ const Navigation: React.FC = () => {
             </div>
           </div>
 
-          <div className={`flex items-center space-x-2 sm:space-x-4 lg:space-x-6 ${isRTL ? 'space-x-reverse' : ''}`}>
-            {/* Language Toggle */}
-            <div className="hidden lg:flex items-center bg-white rounded-lg border border-gray-200 p-1 mr-4">
-              <Globe className="w-3 h-3 text-gray-500 mr-1" />
-              <button
-                onClick={() => setLanguage('ar')}
-                className={`px-3 py-1 rounded text-sm font-medium transition-all ${
-                  language === 'ar'
-                    ? 'bg-purple-600 text-white'
-                    : 'text-gray-600 hover:text-purple-600'
-                }`}
-              >
-                العربية
-              </button>
-              <button
-                onClick={() => setLanguage('en')}
-                className={`px-3 py-1 rounded text-sm font-medium transition-all ${
-                  language === 'en'
-                    ? 'bg-purple-600 text-white'
-                    : 'text-gray-600 hover:text-purple-600'
-                }`}
-              >
-                English
-              </button>
+          <div className={`flex items-center ${isRTL ? 'flex-row-reverse' : ''} gap-4 lg:gap-6`}>
+            <div className="flex items-center">
+              {/* Language Toggle */}
+              <div className="hidden lg:flex items-center bg-white rounded-lg border border-gray-200 p-1">
+                <Globe className="w-3 h-3 text-gray-500 mr-1" />
+                <button
+                  onClick={() => setLanguage('ar')}
+                  className={`px-3 py-1 rounded text-sm font-medium transition-all ${
+                    language === 'ar'
+                      ? 'bg-purple-600 text-white'
+                      : 'text-gray-600 hover:text-purple-600'
+                  }`}
+                >
+                  العربية
+                </button>
+                <button
+                  onClick={() => setLanguage('en')}
+                  className={`px-3 py-1 rounded text-sm font-medium transition-all ${
+                    language === 'en'
+                      ? 'bg-purple-600 text-white'
+                      : 'text-gray-600 hover:text-purple-600'
+                  }`}
+                >
+                  English
+                </button>
+              </div>
+              {/* Mobile Language Toggle */}
+              <div className="flex lg:hidden items-center bg-gray-100 rounded-lg p-1">
+                <Globe className="w-3 h-3 text-gray-500 mr-1" />
+                <button
+                  onClick={() => setLanguage('ar')}
+                  className={`px-2 py-1 rounded text-xs font-medium transition-all ${
+                    language === 'ar'
+                      ? 'bg-purple-600 text-white'
+                      : 'text-gray-600 hover:text-purple-600'
+                  }`}
+                >
+                  ع
+                </button>
+                <button
+                  onClick={() => setLanguage('en')}
+                  className={`px-2 py-1 rounded text-xs font-medium transition-all ${
+                    language === 'en'
+                      ? 'bg-purple-600 text-white'
+                      : 'text-gray-600 hover:text-purple-600'
+                  }`}
+                >
+                  EN
+                </button>
+              </div>
             </div>
-            
-            {/* Mobile Language Toggle */}
-            <div className="flex lg:hidden items-center bg-gray-100 rounded-lg p-1 mr-2">
-              <Globe className="w-3 h-3 text-gray-500 mr-1" />
-              <button
-                onClick={() => setLanguage('ar')}
-                className={`px-2 py-1 rounded text-xs font-medium transition-all ${
-                  language === 'ar'
-                    ? 'bg-purple-600 text-white'
-                    : 'text-gray-600 hover:text-purple-600'
-                }`}
-              >
-                ع
-              </button>
-              <button
-                onClick={() => setLanguage('en')}
-                className={`px-2 py-1 rounded text-xs font-medium transition-all ${
-                  language === 'en'
-                    ? 'bg-purple-600 text-white'
-                    : 'text-gray-600 hover:text-purple-600'
-                }`}
-              >
-                EN
-              </button>
-            </div>
-
             <button
               onClick={() => handleNavigation('/')}
-              className={`flex items-center space-x-1 sm:space-x-2 text-gray-700 hover:text-purple-600 transition-colors ${isRTL ? 'mr-4 lg:mr-6' : 'ml-4 lg:ml-6'}`}
+              className="flex items-center space-x-1 sm:space-x-2 text-gray-700 hover:text-purple-600 transition-colors"
             >
               <Home className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="text-sm sm:text-base hidden sm:inline">{t('nav.home')}</span>

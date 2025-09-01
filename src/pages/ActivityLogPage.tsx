@@ -139,7 +139,10 @@ const ActivityLogPage: React.FC = () => {
                   {t('activityLog.timestamp')}
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('activityLog.user')}
+                  {t('activityLog.name')}
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('activityLog.username')}
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('activityLog.action')}
@@ -152,7 +155,7 @@ const ActivityLogPage: React.FC = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {activities.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
                     {t('activityLog.noActivities')}
                   </td>
                 </tr>
@@ -163,7 +166,10 @@ const ActivityLogPage: React.FC = () => {
                       {new Date(activity.timestamp).toLocaleDateString('en-GB')} {new Date(activity.timestamp).toLocaleTimeString('en-GB', { hour12: false })}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center">
-                      {activity.userName || activity.user_name}
+                      {activity.name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                      {activity.username}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
@@ -177,7 +183,7 @@ const ActivityLogPage: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500 text-center">
-                      {t(`activityLog.details.${activity.action}`) || activity.details}
+                      {activity.details}
                     </td>
                   </tr>
                 ))

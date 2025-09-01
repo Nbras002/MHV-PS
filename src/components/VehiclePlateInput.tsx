@@ -5,6 +5,7 @@ interface VehiclePlateInputProps {
   value: string;
   onChange: (value: string) => void;
   disabled?: boolean;
+  required?: boolean;
   className?: string;
 }
 
@@ -12,6 +13,7 @@ const VehiclePlateInput: React.FC<VehiclePlateInputProps> = ({
   value,
   onChange,
   disabled = false,
+  required = false,
   className = ''
 }) => {
   const { language } = useLanguage();
@@ -113,6 +115,7 @@ const VehiclePlateInput: React.FC<VehiclePlateInputProps> = ({
         type="text"
         value="N/A"
         disabled
+        required={false}
         className={`w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 ${className}`}
       />
     );
@@ -151,6 +154,7 @@ const VehiclePlateInput: React.FC<VehiclePlateInputProps> = ({
               className="w-12 h-10 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono"
               maxLength={1}
               placeholder="1"
+              required={required && index === 0}
             />
           ))}
         </>
@@ -167,6 +171,7 @@ const VehiclePlateInput: React.FC<VehiclePlateInputProps> = ({
               className="w-12 h-10 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono"
               maxLength={1}
               placeholder="1"
+              required={required && index === 0}
             />
           ))}
           
@@ -185,6 +190,7 @@ const VehiclePlateInput: React.FC<VehiclePlateInputProps> = ({
               className="w-12 h-10 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono"
               maxLength={1}
               placeholder="T"
+              required={required && index === 0}
             />
           ))}
         </>
@@ -194,3 +200,4 @@ const VehiclePlateInput: React.FC<VehiclePlateInputProps> = ({
 };
 
 export default VehiclePlateInput;
+              required={required && index === 0}

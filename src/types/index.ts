@@ -114,12 +114,12 @@ export interface Material {
 export interface ActivityLog {
   id: string;
   userId: string;
-  userName: string;
+  name: string;
+  username: string;
   action: string;
   details: string;
   timestamp: string;
   ip?: string;
-  userAgent?: string;
   userAgent?: string;
 }
 

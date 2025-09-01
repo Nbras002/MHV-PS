@@ -509,11 +509,14 @@ router.delete('/:id', requirePermission('canDeletePermits'), async (req, res) =>
       .from('activity_logs')
       .insert({
         user_id: req.user.id,
-        user_name: `${req.user.first_name} ${req.user.last_name}`,
+        name: `${req.user.first_name} ${req.user.last_name}`,
+        username: req.user.username,
         action: 'delete_permit',
-        details: `Deleted permit ${existingPermit.permit_number}`,
-        ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown'
-      });
+        details: `Deleted permit ${existingPermit.permit_number} for ${existingPermit.carrier_name}`,
+        ip: req.clientIP || 'unknown',
+        user_agent: req.userAgent || 'unknown'
+      }
+      )
 
     res.json({ message: 'Permit deleted successfully' });
   } catch (error) {

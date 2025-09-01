@@ -655,6 +655,7 @@ const HomePage: React.FC = () => {
                       value={newPermit.vehiclePlate}
                       onChange={(value) => setNewPermit({ ...newPermit, vehiclePlate: value })}
                       disabled={submitting || newPermit.requestType === 'material_entrance' || newPermit.requestType === 'material_exit'}
+                      required={newPermit.requestType !== 'material_entrance' && newPermit.requestType !== 'material_exit'}
                     />
                     <p className="text-xs text-gray-500 mt-1">
                       {language === 'ar' ? 'صيغة: أرقام + حروف (مثال: ح ن ط 1234)' : 'Format: digits + letters (e.g., 1234 T N J)'}
@@ -689,7 +690,9 @@ const HomePage: React.FC = () => {
                             placeholder={t('permits.materialDescription')}
                             value={material.description}
                             onChange={(e) => updateMaterial(material.id, 'description', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                              newPermit.requestType === 'heavy_vehicle_entrance_exit' ? 'bg-gray-100 text-gray-500' : ''
+                            }`}
                             required
                             disabled={submitting || newPermit.requestType === 'heavy_vehicle_entrance_exit'}
                           />
@@ -700,7 +703,9 @@ const HomePage: React.FC = () => {
                             placeholder={t('permits.serialNumber')}
                             value={material.serialNumber}
                             onChange={(e) => updateMaterial(material.id, 'serialNumber', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                              newPermit.requestType === 'heavy_vehicle_entrance_exit' ? 'bg-gray-100 text-gray-500' : ''
+                            }`}
                             required
                             disabled={submitting || newPermit.requestType === 'heavy_vehicle_entrance_exit'}
                           />

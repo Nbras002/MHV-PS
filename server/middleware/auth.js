@@ -4,6 +4,20 @@ import { supabase } from '../config/database.js';
 export const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
+  
+  // Get real IP address
+  const getClientIP = (req) => {
+    return req.headers['x-forwarded-for']?.split(',')[0] ||
+           req.headers['x-real-ip'] ||
+           req.connection.remoteAddress ||
+           req.socket.remoteAddress ||
+           req.ip ||
+           'unknown';
+  };
+  
+  // Store IP and user agent for later use
+  req.clientIP = getClientIP(req);
+  req.userAgent = req.get('User-Agent') || 'unknown';
 
   console.log('🔐 Auth middleware - Token present:', !!token);
   console.log('🔐 Auth middleware - Path:', req.path);

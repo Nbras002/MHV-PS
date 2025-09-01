@@ -236,11 +236,14 @@ router.delete('/:id', requirePermission('canManageUsers'), async (req, res) => {
       .from('activity_logs')
       .insert({
         user_id: req.user.id,
-        user_name: `${req.user.first_name} ${req.user.last_name}`,
+        name: `${req.user.first_name} ${req.user.last_name}`,
+        username: req.user.username,
         action: 'delete_user',
         details: `Deleted user ${userToDelete.username}`,
-        ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown'
-      });
+        ip: req.clientIP || 'unknown',
+        user_agent: req.userAgent || 'unknown'
+      }
+      )
 
     res.json({ message: 'User deleted successfully' });
   } catch (error) {

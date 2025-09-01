@@ -14,7 +14,8 @@ router.get('/', requirePermission('canViewActivityLog'), async (req, res) => {
       .select(`
         id,
         user_id,
-        user_name,
+        name,
+        username,
         action,
         details,
         timestamp,
@@ -25,7 +26,7 @@ router.get('/', requirePermission('canViewActivityLog'), async (req, res) => {
       .range(offset, offset + limit - 1);
 
     if (search) {
-      query = query.or(`user_name.ilike.%${search}%,details.ilike.%${search}%`);
+      query = query.or(`name.ilike.%${search}%,username.ilike.%${search}%,details.ilike.%${search}%`);
     }
 
     if (action) {
@@ -52,7 +53,8 @@ router.get('/', requirePermission('canViewActivityLog'), async (req, res) => {
     const formattedActivities = activities.map(activity => ({
       id: activity.id,
       userId: activity.user_id,
-      userName: activity.user_name,
+      name: activity.name,
+      username: activity.username,
       action: activity.action,
       details: activity.details,
       timestamp: activity.timestamp,
@@ -66,7 +68,7 @@ router.get('/', requirePermission('canViewActivityLog'), async (req, res) => {
       .select('*', { count: 'exact', head: true });
 
     if (search) {
-      countQuery = countQuery.or(`user_name.ilike.%${search}%,details.ilike.%${search}%`);
+      countQuery = countQuery.or(`name.ilike.%${search}%,username.ilike.%${search}%,details.ilike.%${search}%`);
     }
 
     if (action) {

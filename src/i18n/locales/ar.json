@@ -157,7 +157,8 @@
     "topCarriers": "أكثر الناقلين",
     "noData": "لا توجد بيانات",
     "topClosers": "المستخدمون الأكثر إغلاقًا للتصاريح",
-    "topCreators": "المستخدمون الأكثر إنشاءً للتصاريح"
+    "topCreators": "المستخدمون الأكثر إنشاءً للتصاريح",
+    "count": "العدد"
   },
   "activityLog": {
     "title": "سجل النشاط",
@@ -166,7 +167,8 @@
     "allActions": "جميع الإجراءات",
     "showing": "عرض {{filtered}} من {{total}} نشاط",
     "noActivities": "لا توجد أنشطة",
-    "user": "المستخدم",
+    "name": "الاسم",
+    "username": "اسم المستخدم",
     "action": "الإجراء",
     "detailsLabel": "التفاصيل",
     "timestamp": "الوقت",

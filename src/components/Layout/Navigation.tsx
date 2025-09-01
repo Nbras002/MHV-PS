@@ -27,7 +27,7 @@ const Navigation: React.FC = () => {
     <nav className="fixed top-0 left-0 right-0 bg-white shadow-md z-40">
       <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* شعار النظام */}
+
           <div className="flex items-center space-x-2 sm:space-x-4">
             <div className="flex items-center">
               <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center mr-3">
@@ -38,7 +38,7 @@ const Navigation: React.FC = () => {
               </span>
             </div>
           </div>
-          {/* زر تبديل اللغة منفصل */}
+
           <div className={`flex items-center${isRTL ? ' mr-5' : ' ml-5'}`}>
             <div className="hidden lg:flex items-center bg-white rounded-lg border border-gray-200 p-1">
               <Globe className="w-3 h-3 text-gray-500 mr-1" />
@@ -72,7 +72,7 @@ const Navigation: React.FC = () => {
               </button>
             </div>
           </div>
-          {/* بقية أزرار التنقل */}
+
           <div className={`flex items-center space-x-2 sm:space-x-4 lg:space-x-6 ${isRTL ? 'space-x-reverse' : ''}`}>
             <button
               onClick={() => handleNavigation('/')}

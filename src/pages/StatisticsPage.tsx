@@ -169,7 +169,7 @@ const StatisticsPage: React.FC = () => {
                     fontSize={12}
                   />
                   <YAxis />
-                  <Tooltip />
+                  <Tooltip formatter={(value) => [value, t('statistics.count')]} />
                   <Bar dataKey="count" fill="#4F008C" />
                 </BarChart>
               </ResponsiveContainer>
@@ -193,7 +193,7 @@ const StatisticsPage: React.FC = () => {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ type, percent }) => `${type}: ${(percent * 100).toFixed(0)}%`}
+                    label={({ type, percent, count }) => `${type}: ${count} (${(percent * 100).toFixed(0)}%)`}
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="count"
@@ -202,7 +202,7 @@ const StatisticsPage: React.FC = () => {
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip formatter={(value) => [value, t('statistics.count')]} />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
@@ -221,9 +221,15 @@ const StatisticsPage: React.FC = () => {
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={trendChartData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
+                  <XAxis 
+                    dataKey="date" 
+                    tickFormatter={(value) => new Date(value).toLocaleDateString('en-GB')}
+                  />
                   <YAxis />
-                  <Tooltip />
+                  <Tooltip 
+                    labelFormatter={(value) => new Date(value).toLocaleDateString('en-GB')}
+                    formatter={(value) => [value, t('statistics.count')]}
+                  />
                   <Line type="monotone" dataKey="count" stroke="#4F008C" strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>
@@ -250,7 +256,7 @@ const StatisticsPage: React.FC = () => {
                     width={150}
                     fontSize={12}
                   />
-                  <Tooltip />
+                  <Tooltip formatter={(value) => [value, t('statistics.count')]} />
                   <Bar dataKey="count" fill="#00C48C" />
                 </BarChart>
               </ResponsiveContainer>
@@ -277,7 +283,7 @@ const StatisticsPage: React.FC = () => {
                     width={150}
                     fontSize={12}
                   />
-                  <Tooltip />
+                  <Tooltip formatter={(value) => [value, t('statistics.count')]} />
                   <Bar dataKey="count" fill="#FF375e" />
                 </BarChart>
               </ResponsiveContainer>
@@ -304,7 +310,7 @@ const StatisticsPage: React.FC = () => {
                     width={150}
                     fontSize={12}
                   />
-                  <Tooltip />
+                  <Tooltip formatter={(value) => [value, t('statistics.count')]} />
                   <Bar dataKey="count" fill="#A54EE1" />
                 </BarChart>
               </ResponsiveContainer>

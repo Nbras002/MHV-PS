@@ -200,4 +200,3 @@ const VehiclePlateInput: React.FC<VehiclePlateInputProps> = ({
 };
 
 export default VehiclePlateInput;
-              required={required && index === 0}

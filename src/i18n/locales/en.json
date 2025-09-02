@@ -173,7 +173,19 @@
     "action": "Action",
     "detailsLabel": "Details",
     "timestamp": "Timestamp",
-
+    "actions": {
+      "login": "User Login",
+      "logout": "User Logout",
+      "create_permit": "Created Permit",
+      "update_permit": "Updated Permit",
+      "delete_permit": "Deleted Permit",
+      "close_permit": "Closed Permit",
+      "reopen_permit": "Reopened Permit",
+      "create_user": "Created User",
+      "update_user": "Updated User",
+      "delete_user": "Deleted User",
+      "export_permits": "Exported Permits"
+    },
     "details": {
       "login": "User logged in successfully",
       "logout": "User logged out",

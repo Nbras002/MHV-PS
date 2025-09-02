@@ -173,7 +173,19 @@
     "action": "الإجراء",
     "detailsLabel": "التفاصيل",
     "timestamp": "التاريخ والوقت",
-
+    "actions": {
+      "login": "دخول المستخدم",
+      "logout": "خروج المستخدم",
+      "create_permit": "إنشاء تصريح",
+      "update_permit": "تحديث تصريح",
+      "delete_permit": "حذف تصريح",
+      "close_permit": "إغلاق تصريح",
+      "reopen_permit": "إعادة فتح تصريح",
+      "create_user": "إنشاء مستخدم",
+      "update_user": "تحديث مستخدم",
+      "delete_user": "حذف مستخدم",
+      "export_permits": "تصدير التصاريح"
+    },
     "details": {
       "login": "تم تسجيل الدخول بنجاح",
       "logout": "تم تسجيل الخروج",

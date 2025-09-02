@@ -701,22 +701,25 @@ const HomePage: React.FC = () => {
                       {t('permits.materials')}
                     </label>
                     {newPermit.requestType !== 'heavy_vehicle_entrance_exit' && (
-                      <button
-                        type="button"
-                        onClick={addMaterial}
-                        className={`flex items-center space-x-2 text-sm ${
-                          newPermit.materials.length >= 50 
-                            ? 'text-gray-400 cursor-not-allowed' 
-                            : 'text-purple-600 hover:text-purple-700'
-                        }`}
-                        disabled={submitting || newPermit.materials.length >= 50}
-                      >
-                        <Plus className="w-4 h-4" />
-                        <span>
-                          {t('permits.addMaterial')} ({newPermit.materials.length}/50)
-                        </span>
-                      </button>
-                    )}
+                    <>
+                      {['material_entrance', 'material_exit', 'heavy_vehicle_entrance', 'heavy_vehicle_exit'].includes(newPermit.requestType) && (
+                        <button
+                          type="button"
+                          onClick={addMaterial}
+                          className={`flex items-center space-x-2 text-sm ${
+                            newPermit.materials.length >= 50 
+                              ? 'text-gray-400 cursor-not-allowed' 
+                              : 'text-purple-600 hover:text-purple-700'
+                          }`}
+                          disabled={submitting || newPermit.materials.length >= 50}
+                        >
+                          <Plus className="w-4 h-4" />
+                          <span>
+                            {t('permits.addMaterial')} ({newPermit.materials.length}/50)
+                          </span>
+                        </button>
+                      )}
+                    </>
                   </div>
 
                   <div className="space-y-3">
@@ -748,16 +751,18 @@ const HomePage: React.FC = () => {
                             disabled={submitting || newPermit.requestType === 'heavy_vehicle_entrance_exit'}
                           />
                         </div>
-                        {newPermit.materials.length > 1 && newPermit.requestType !== 'heavy_vehicle_entrance_exit' && (
-                          <button
-                            type="button"
-                            onClick={() => removeMaterial(material.id)}
-                            className="text-red-600 hover:text-red-700 p-2"
-                            disabled={submitting}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        )}
+                        <>
+                          {newPermit.materials.length > 1 && ['material_entrance', 'material_exit', 'heavy_vehicle_entrance', 'heavy_vehicle_exit'].includes(newPermit.requestType) && (
+                            <button
+                              type="button"
+                              onClick={() => removeMaterial(material.id)}
+                              className="text-red-600 hover:text-red-700 p-2"
+                              disabled={submitting}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
+                        </>
                       </div>
                     ))}
                   </div>

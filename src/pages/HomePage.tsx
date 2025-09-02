@@ -65,49 +65,23 @@ const HomePage: React.FC = () => {
 
   // Auto-disable vehicle plate for material-only requests and materials for heavy vehicle entrance/exit
   useEffect(() => {
-    // For material-only requests, disable vehicle plate
-    if (
-      newPermit.requestType === 'material_entrance' ||
-      newPermit.requestType === 'material_exit'
-    ) {
+    if (newPermit.requestType === 'material_entrance' || newPermit.requestType === 'material_exit') {
       setNewPermit(prev => ({ ...prev, vehiclePlate: 'N/A' }));
     } else if (newPermit.vehiclePlate === 'N/A') {
       setNewPermit(prev => ({ ...prev, vehiclePlate: '' }));
     }
-
-    // For heavy vehicle entrance/exit, disable materials
+    
+    // Disable materials for heavy vehicle entrance/exit
     if (newPermit.requestType === 'heavy_vehicle_entrance_exit') {
-      setNewPermit(prev => ({
-        ...prev,
+      setNewPermit(prev => ({ 
+        ...prev, 
         materials: [{ id: '1', description: 'N/A', serialNumber: 'N/A' }]
       }));
-    } else if (
-      newPermit.materials.length === 1 &&
-      newPermit.materials[0].description === 'N/A'
-    ) {
-      setNewPermit(prev => ({
-        ...prev,
+    } else if (newPermit.materials.length === 1 && newPermit.materials[0].description === 'N/A') {
+      setNewPermit(prev => ({ 
+        ...prev, 
         materials: [{ id: '1', description: '', serialNumber: '' }]
       }));
-    }
-
-    // For heavy vehicle material entrance/exit, ensure vehicle plate is enabled and materials are enabled
-    if (
-      newPermit.requestType === 'heavy_vehicle_entrance' ||
-      newPermit.requestType === 'heavy_vehicle_exit'
-    ) {
-      if (newPermit.vehiclePlate === 'N/A') {
-        setNewPermit(prev => ({ ...prev, vehiclePlate: '' }));
-      }
-      if (
-        newPermit.materials.length === 1 &&
-        newPermit.materials[0].description === 'N/A'
-      ) {
-        setNewPermit(prev => ({
-          ...prev,
-          materials: [{ id: '1', description: '', serialNumber: '' }]
-        }));
-      }
     }
   }, [newPermit.requestType]);
 
@@ -247,11 +221,6 @@ const HomePage: React.FC = () => {
   };
 
   const addMaterial = () => {
-    if (newPermit.materials.length >= 50) {
-      alert(t('permits.materialLimitReached'));
-      return;
-    }
-    
     setNewPermit({
       ...newPermit,
       materials: [...newPermit.materials, { id: Date.now().toString(), description: '', serialNumber: '' }]
@@ -686,8 +655,7 @@ const HomePage: React.FC = () => {
                       value={newPermit.vehiclePlate}
                       onChange={(value) => setNewPermit({ ...newPermit, vehiclePlate: value })}
                       disabled={submitting || newPermit.requestType === 'material_entrance' || newPermit.requestType === 'material_exit'}
-                      required={true}
-                      isRequired={newPermit.requestType !== 'material_entrance' && newPermit.requestType !== 'material_exit'}
+                      required={newPermit.requestType !== 'material_entrance' && newPermit.requestType !== 'material_exit'}
                     />
                     <p className="text-xs text-gray-500 mt-1">
                       {language === 'ar' ? 'صيغة: أرقام + حروف (مثال: ح ن ط 1234)' : 'Format: digits + letters (e.g., 1234 T N J)'}
@@ -701,25 +669,16 @@ const HomePage: React.FC = () => {
                       {t('permits.materials')}
                     </label>
                     {newPermit.requestType !== 'heavy_vehicle_entrance_exit' && (
-                    <>
-                      {['material_entrance', 'material_exit', 'heavy_vehicle_entrance', 'heavy_vehicle_exit'].includes(newPermit.requestType) && (
-                        <button
-                          type="button"
-                          onClick={addMaterial}
-                          className={`flex items-center space-x-2 text-sm ${
-                            newPermit.materials.length >= 50 
-                              ? 'text-gray-400 cursor-not-allowed' 
-                              : 'text-purple-600 hover:text-purple-700'
-                          }`}
-                          disabled={submitting || newPermit.materials.length >= 50}
-                        >
-                          <Plus className="w-4 h-4" />
-                          <span>
-                            {t('permits.addMaterial')} ({newPermit.materials.length}/50)
-                          </span>
-                        </button>
-                      )}
-                    </>
+                      <button
+                        type="button"
+                        onClick={addMaterial}
+                        className="flex items-center space-x-2 text-purple-600 hover:text-purple-700 text-sm"
+                        disabled={submitting}
+                      >
+                        <Plus className="w-4 h-4" />
+                        <span>{t('permits.addMaterial')}</span>
+                      </button>
+                    )}
                   </div>
 
                   <div className="space-y-3">
@@ -751,7 +710,7 @@ const HomePage: React.FC = () => {
                             disabled={submitting || newPermit.requestType === 'heavy_vehicle_entrance_exit'}
                           />
                         </div>
-                        {newPermit.materials.length > 1 && ['material_entrance', 'material_exit', 'heavy_vehicle_entrance', 'heavy_vehicle_exit'].includes(newPermit.requestType) && (
+                        {newPermit.materials.length > 1 && newPermit.requestType !== 'heavy_vehicle_entrance_exit' && (
                           <button
                             type="button"
                             onClick={() => removeMaterial(material.id)}

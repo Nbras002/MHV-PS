@@ -57,8 +57,8 @@
     "material_entrance": "Material Entrance",
     "material_exit": "Material Exit",
     "heavy_vehicle_entrance_exit": "Heavy Vehicle Entrance/Exit",
-    "heavy_vehicle_entrance": "Heavy Vehicle Entrance/Exit",
-    "heavy_vehicle_exit": "Heavy Vehicle Exit in Heavy Vehicle"
+    "heavy_vehicle_entrance": "Material Entrance in Heavy Vehicle",
+    "heavy_vehicle_exit": "Material Exit in Heavy Vehicle"
   },
   "roles": {
     "admin": "Administrator",
@@ -110,7 +110,7 @@
     "invalidPermitNumber": "Permit number must be in format: three letters followed by digits (e.g., MHV1234567)",
     "cannotReopenTime": "Cannot reopen permit after one hour has passed since closure",
     "cannotReopenUser": "Permit can only be reopened by the same user who closed it or by an Administrator",
-    "permitNumberFormat": "Format: 3 letters + digits (e.g., MHV1234567 or DCO12345)",
+    "permitNumberFormat": "Format: 3 letters + digits (e.g., MHV1234567)",
     "materialLimitReached": "Maximum of 50 materials allowed per permit"
   },
   "users": {

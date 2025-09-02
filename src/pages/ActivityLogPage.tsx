@@ -139,10 +139,10 @@ const ActivityLogPage: React.FC = () => {
                   {t('activityLog.timestamp')}
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('activityLog.nameColumn')}
+                  {t('activityLog.name')}
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('activityLog.usernameColumn')}
+                  {t('activityLog.username')}
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('activityLog.action')}

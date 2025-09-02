@@ -173,31 +173,19 @@
     "action": "Action",
     "detailsLabel": "Details",
     "timestamp": "Timestamp",
-    "actions": {
-      "login": "User Login",
-      "logout": "User Logout",
-      "create_permit": "Created Permit",
-      "update_permit": "Updated Permit",
-      "delete_permit": "Deleted Permit",
-      "close_permit": "Closed Permit",
-      "reopen_permit": "Reopened Permit",
-      "create_user": "Created User",
-      "update_user": "Updated User",
-      "delete_user": "Deleted User",
-      "export_permits": "Exported Permits"
-    },
+
     "details": {
       "login": "User logged in successfully",
       "logout": "User logged out",
-      "create_permit": "Created permit",
-      "update_permit": "Updated permit",
-      "delete_permit": "Deleted permit",
-      "close_permit": "Closed permit",
-      "reopen_permit": "Reopened permit",
-      "create_user": "Created user",
-      "update_user": "Updated user",
-      "delete_user": "Deleted user",
-      "export_permits": "Exported permits"
+      "create_permit": "Created permit {{permitNumber}}",
+      "update_permit": "Updated permit {{permitNumber}}",
+      "delete_permit": "Deleted permit {{permitNumber}}",
+      "close_permit": "Closed permit {{permitNumber}}",
+      "reopen_permit": "Reopened permit {{permitNumber}}",
+      "create_user": "Created user {{username}}",
+      "update_user": "Updated user {{username}}",
+      "delete_user": "Deleted user {{username}}",
+      "export_permits": "Exported permits {{count}}"
     }
   },
   "common": {

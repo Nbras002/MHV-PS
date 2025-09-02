@@ -173,31 +173,19 @@
     "action": "الإجراء",
     "detailsLabel": "التفاصيل",
     "timestamp": "التاريخ والوقت",
-    "actions": {
-      "login": "دخول المستخدم",
-      "logout": "خروج المستخدم",
-      "create_permit": "إنشاء تصريح",
-      "update_permit": "تحديث تصريح",
-      "delete_permit": "حذف تصريح",
-      "close_permit": "إغلاق تصريح",
-      "reopen_permit": "إعادة فتح تصريح",
-      "create_user": "إنشاء مستخدم",
-      "update_user": "تحديث مستخدم",
-      "delete_user": "حذف مستخدم",
-      "export_permits": "تصدير التصاريح"
-    },
+
     "details": {
       "login": "تم تسجيل الدخول بنجاح",
       "logout": "تم تسجيل الخروج",
-      "create_permit": "تم إنشاء تصريح",
-      "update_permit": "تم تحديث تصريح",
-      "delete_permit": "تم حذف تصريح",
-      "close_permit": "تم إغلاق تصريح",
-      "reopen_permit": "تم إعادة فتح تصريح",
-      "create_user": "تم إنشاء مستخدم",
-      "update_user": "تم تحديث مستخدم",
-      "delete_user": "تم حذف مستخدم",
-      "export_permits": "تم تصدير التصاريح"
+      "create_permit": "تم إنشاء تصريح {{permitNumber}}",
+      "update_permit": "تم تحديث تصريح {{permitNumber}}",
+      "delete_permit": "تم حذف تصريح {{permitNumber}}",
+      "close_permit": "تم إغلاق تصريح {{permitNumber}}",
+      "reopen_permit": "تم إعادة فتح تصريح {{permitNumber}}",
+      "create_user": "تم إنشاء مستخدم {{username}}",
+      "update_user": "تم تحديث مستخدم {{username}}",
+      "delete_user": "تم حذف مستخدم {{username}}",
+      "export_permits": "تم تصدير التصاريح {{count}}"
     }
   },
   "common": {

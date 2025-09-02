@@ -107,10 +107,11 @@
     "deleteConfirm": "Are you sure you want to delete this permit?",
     "closeConfirm": "Are you sure you want to close this permit?",
     "reopenConfirm": "Are you sure you want to reopen this permit?",
-    "invalidPermitNumber": "Permit number must be in format: three letters followed by digits (e.g., MHV1234567 or DCO12345)",
+    "invalidPermitNumber": "Permit number must be in format: three letters followed by digits (e.g., MHV1234567)",
     "cannotReopenTime": "Cannot reopen permit after one hour has passed since closure",
     "cannotReopenUser": "Permit can only be reopened by the same user who closed it or by an Administrator",
-    "permitNumberFormat": "Format: 3 letters + digits (e.g., MHV1234567 or DCO12345)"
+    "permitNumberFormat": "Format: 3 letters + digits (e.g., MHV1234567 or DCO12345)",
+    "materialLimitReached": "Maximum of 50 materials allowed per permit"
   },
   "users": {
     "title": "User Management",

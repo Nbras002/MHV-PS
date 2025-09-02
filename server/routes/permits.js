@@ -465,11 +465,12 @@ router.patch('/:id/reopen', requirePermission('canReopenPermits'), async (req, r
       .from('activity_logs')
       .insert({
         user_id: req.user.id,
-        user_name: `${req.user.first_name} ${req.user.last_name}`,
+        name: `${req.user.first_name} ${req.user.last_name}`,
+        username: req.user.username,
         action: 'reopen_permit',
         details: `Reopened permit ${permit.permit_number}`,
-        ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
-        user_agent: req.get('User-Agent') || 'unknown'
+        ip: req.clientIP || 'unknown',
+        user_agent: req.userAgent || 'unknown'
       });
 
     res.json({ permit: formattedPermit });

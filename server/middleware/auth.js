@@ -7,17 +7,24 @@ export const authenticateToken = async (req, res, next) => {
   
   // Get real IP address
   const getClientIP = (req) => {
-    return req.headers['x-forwarded-for']?.split(',')[0] ||
+    return req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
            req.headers['x-real-ip'] ||
+           req.headers['cf-connecting-ip'] ||
            req.connection.remoteAddress ||
            req.socket.remoteAddress ||
+           req.connection?.socket?.remoteAddress ||
            req.ip ||
            'unknown';
   };
   
+  // Get user agent
+  const getUserAgent = (req) => {
+    return req.headers['user-agent'] || req.get('User-Agent') || 'unknown';
+  };
+  
   // Store IP and user agent for later use
   req.clientIP = getClientIP(req);
-  req.userAgent = req.get('User-Agent') || 'unknown';
+  req.userAgent = getUserAgent(req);
 
   console.log('🔐 Auth middleware - Token present:', !!token);
   console.log('🔐 Auth middleware - Path:', req.path);

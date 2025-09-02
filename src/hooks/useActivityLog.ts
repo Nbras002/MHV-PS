@@ -31,9 +31,71 @@ export const useActivityLog = () => {
   }, [user]);
 
   const logActivity = async (action: string, details: string) => {
+    // Translate the details based on current language
+    const translatedDetails = translateActivityDetails(action, details);
+    
     // Activity logging is handled automatically by the backend
-    // This function is kept for compatibility but doesn't need to do anything
-    // as the backend middleware logs activities automatically
+    // This function provides translated details for the frontend
+    return translatedDetails;
+  };
+
+  const translateActivityDetails = (action: string, details: string) => {
+    // Extract specific information from details
+    const permitNumberMatch = details.match(/permit\s+([A-Z0-9]+)/i);
+    const userNameMatch = details.match(/user\s+([^\s]+)/i);
+    
+    switch (action) {
+      case 'create_permit':
+        if (permitNumberMatch) {
+          return t('activityLog.detailsTranslated.create_permit', { permitNumber: permitNumberMatch[1] });
+        }
+        return t('activityLog.details.create_permit');
+      
+      case 'update_permit':
+        if (permitNumberMatch) {
+          return t('activityLog.detailsTranslated.update_permit', { permitNumber: permitNumberMatch[1] });
+        }
+        return t('activityLog.details.update_permit');
+      
+      case 'delete_permit':
+        if (permitNumberMatch) {
+          return t('activityLog.detailsTranslated.delete_permit', { permitNumber: permitNumberMatch[1] });
+        }
+        return t('activityLog.details.delete_permit');
+      
+      case 'close_permit':
+        if (permitNumberMatch) {
+          return t('activityLog.detailsTranslated.close_permit', { permitNumber: permitNumberMatch[1] });
+        }
+        return t('activityLog.details.close_permit');
+      
+      case 'reopen_permit':
+        if (permitNumberMatch) {
+          return t('activityLog.detailsTranslated.reopen_permit', { permitNumber: permitNumberMatch[1] });
+        }
+        return t('activityLog.details.reopen_permit');
+      
+      case 'create_user':
+        if (userNameMatch) {
+          return t('activityLog.detailsTranslated.create_user', { username: userNameMatch[1] });
+        }
+        return t('activityLog.details.create_user');
+      
+      case 'update_user':
+        if (userNameMatch) {
+          return t('activityLog.detailsTranslated.update_user', { username: userNameMatch[1] });
+        }
+        return t('activityLog.details.update_user');
+      
+      case 'delete_user':
+        if (userNameMatch) {
+          return t('activityLog.detailsTranslated.delete_user', { username: userNameMatch[1] });
+        }
+        return t('activityLog.details.delete_user');
+      
+      default:
+        return details;
+    }
   };
 
   return { 

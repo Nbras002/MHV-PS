@@ -187,11 +187,12 @@ router.put('/:id', [
       .from('activity_logs')
       .insert({
         user_id: req.user.id,
-        user_name: `${req.user.first_name} ${req.user.last_name}`,
+        name: `${req.user.first_name} ${req.user.last_name}`,
+        username: req.user.username,
         action: 'update_user',
         details: `Updated user ${user.username}`,
-        ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
-        user_agent: req.get('User-Agent') || 'unknown'
+        ip: req.clientIP || 'unknown',
+        user_agent: req.userAgent || 'unknown'
       });
 
     res.json({ user: formattedUser });

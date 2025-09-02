@@ -136,6 +136,7 @@ const VehiclePlateInput: React.FC<VehiclePlateInputProps> = ({
               className="w-12 h-10 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono"
               maxLength={1}
               placeholder="ح"
+              required={isRequired}
             />
           ))}
           
@@ -154,7 +155,7 @@ const VehiclePlateInput: React.FC<VehiclePlateInputProps> = ({
               className="w-12 h-10 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono"
               maxLength={1}
               placeholder="1"
-              required={required && index === 0}
+              required={isRequired}
             />
           ))}
         </>
@@ -171,7 +172,7 @@ const VehiclePlateInput: React.FC<VehiclePlateInputProps> = ({
               className="w-12 h-10 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono"
               maxLength={1}
               placeholder="1"
-              required={required && index === 0}
+              required={isRequired}
             />
           ))}
           
@@ -190,7 +191,7 @@ const VehiclePlateInput: React.FC<VehiclePlateInputProps> = ({
               className="w-12 h-10 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono"
               maxLength={1}
               placeholder="T"
-              required={required && index === 0}
+              required={isRequired}
             />
           ))}
         </>

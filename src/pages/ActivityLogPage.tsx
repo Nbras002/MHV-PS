@@ -139,10 +139,10 @@ const ActivityLogPage: React.FC = () => {
                   {t('activityLog.timestamp')}
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('activityLog.name')}
+                  {t('activityLog.nameColumn')}
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('activityLog.username')}
+                  {t('activityLog.usernameColumn')}
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('activityLog.action')}
@@ -166,10 +166,10 @@ const ActivityLogPage: React.FC = () => {
                       {new Date(activity.timestamp).toLocaleDateString('en-GB')} {new Date(activity.timestamp).toLocaleTimeString('en-GB', { hour12: false })}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center">
-                      {activity.name}
+                      {activity.name || 'N/A'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                      {activity.username}
+                      {activity.username || 'N/A'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
@@ -183,7 +183,7 @@ const ActivityLogPage: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500 text-center">
-                      {activity.details}
+                      {translateActivityDetails(activity.action, activity.details)}
                     </td>
                   </tr>
                 ))
@@ -194,6 +194,77 @@ const ActivityLogPage: React.FC = () => {
       </div>
     </div>
   );
+
+  function translateActivityDetails(action: string, details: string) {
+    // Extract specific information from details
+    const permitNumberMatch = details.match(/permit\s+([A-Z0-9]+)/i);
+    const userNameMatch = details.match(/user\s+([^\s]+)/i);
+    const carrierMatch = details.match(/for\s+([^$]+)$/i);
+    
+    switch (action) {
+      case 'create_permit':
+        if (permitNumberMatch) {
+          return t('activityLog.detailsTranslated.create_permit', { permitNumber: permitNumberMatch[1] });
+        }
+        return t('activityLog.details.create_permit');
+      
+      case 'update_permit':
+        if (permitNumberMatch) {
+          return t('activityLog.detailsTranslated.update_permit', { permitNumber: permitNumberMatch[1] });
+        }
+        return t('activityLog.details.update_permit');
+      
+      case 'delete_permit':
+        if (permitNumberMatch) {
+          const carrierName = carrierMatch ? carrierMatch[1].trim() : '';
+          return t('activityLog.detailsTranslated.delete_permit_with_carrier', { 
+            permitNumber: permitNumberMatch[1],
+            carrierName 
+          });
+        }
+        return t('activityLog.details.delete_permit');
+      
+      case 'close_permit':
+        if (permitNumberMatch) {
+          return t('activityLog.detailsTranslated.close_permit', { permitNumber: permitNumberMatch[1] });
+        }
+        return t('activityLog.details.close_permit');
+      
+      case 'reopen_permit':
+        if (permitNumberMatch) {
+          return t('activityLog.detailsTranslated.reopen_permit', { permitNumber: permitNumberMatch[1] });
+        }
+        return t('activityLog.details.reopen_permit');
+      
+      case 'create_user':
+        if (userNameMatch) {
+          return t('activityLog.detailsTranslated.create_user', { username: userNameMatch[1] });
+        }
+        return t('activityLog.details.create_user');
+      
+      case 'update_user':
+        if (userNameMatch) {
+          return t('activityLog.detailsTranslated.update_user', { username: userNameMatch[1] });
+        }
+        return t('activityLog.details.update_user');
+      
+      case 'delete_user':
+        if (userNameMatch) {
+          return t('activityLog.detailsTranslated.delete_user', { username: userNameMatch[1] });
+        }
+        return t('activityLog.details.delete_user');
+      
+      case 'export_permits':
+        const countMatch = details.match(/(\d+)/);
+        if (countMatch) {
+          return t('activityLog.detailsTranslated.export_permits', { count: countMatch[1] });
+        }
+        return t('activityLog.details.export_permits');
+      
+      default:
+        return details;
+    }
+  }
 };
 
 export default ActivityLogPage;

@@ -248,18 +248,6 @@ router.get('/me', authenticateToken, (req, res) => {
 // Logout
 router.post('/logout', authenticateToken, async (req, res) => {
   try {
-    // Log logout activity
-    await supabase
-      .from('activity_logs')
-      .insert({
-        user_id: req.user.id,
-        name: `${req.user.first_name} ${req.user.last_name}`,
-        username: req.user.username,
-        action: 'logout',
-        details: `User logged out`,
-        ip: req.clientIP || 'unknown',
-        user_agent: req.userAgent || 'unknown'
-      });
 
     res.json({ message: 'Logout successful' });
   } catch (error) {

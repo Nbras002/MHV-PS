@@ -65,23 +65,49 @@ const HomePage: React.FC = () => {
 
   // Auto-disable vehicle plate for material-only requests and materials for heavy vehicle entrance/exit
   useEffect(() => {
-    if (newPermit.requestType === 'material_entrance' || newPermit.requestType === 'material_exit') {
+    // For material-only requests, disable vehicle plate
+    if (
+      newPermit.requestType === 'material_entrance' ||
+      newPermit.requestType === 'material_exit'
+    ) {
       setNewPermit(prev => ({ ...prev, vehiclePlate: 'N/A' }));
     } else if (newPermit.vehiclePlate === 'N/A') {
       setNewPermit(prev => ({ ...prev, vehiclePlate: '' }));
     }
-    
-    // Disable materials for heavy vehicle entrance/exit
+
+    // For heavy vehicle entrance/exit, disable materials
     if (newPermit.requestType === 'heavy_vehicle_entrance_exit') {
-      setNewPermit(prev => ({ 
-        ...prev, 
+      setNewPermit(prev => ({
+        ...prev,
         materials: [{ id: '1', description: 'N/A', serialNumber: 'N/A' }]
       }));
-    } else if (newPermit.materials.length === 1 && newPermit.materials[0].description === 'N/A') {
-      setNewPermit(prev => ({ 
-        ...prev, 
+    } else if (
+      newPermit.materials.length === 1 &&
+      newPermit.materials[0].description === 'N/A'
+    ) {
+      setNewPermit(prev => ({
+        ...prev,
         materials: [{ id: '1', description: '', serialNumber: '' }]
       }));
+    }
+
+    // For heavy vehicle material entrance/exit, ensure vehicle plate is enabled and materials are enabled
+    if (
+      newPermit.requestType === 'heavy_vehicle_entrance' ||
+      newPermit.requestType === 'heavy_vehicle_exit'
+    ) {
+      if (newPermit.vehiclePlate === 'N/A') {
+        setNewPermit(prev => ({ ...prev, vehiclePlate: '' }));
+      }
+      if (
+        newPermit.materials.length === 1 &&
+        newPermit.materials[0].description === 'N/A'
+      ) {
+        setNewPermit(prev => ({
+          ...prev,
+          materials: [{ id: '1', description: '', serialNumber: '' }]
+        }));
+      }
     }
   }, [newPermit.requestType]);
 

@@ -343,7 +343,7 @@ router.patch('/:id/close', requirePermission('canClosePermits'), async (req, res
       .from('permits')
       .update({
         closed_by: req.user.id,
-        closed_by_name: `${req.user.first_name} ${req.user.last_name} [${req.user.username}]`,
+        closed_by_name: `${req.user.first_name} ${req.user.last_name}`,
         closed_at: new Date().toISOString(),
         can_reopen: true
       })

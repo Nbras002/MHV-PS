@@ -77,7 +77,7 @@ const HomePage: React.FC = () => {
         ...prev, 
         materials: [{ id: '1', description: 'N/A', serialNumber: 'N/A' }]
       }));
-    } else if (newPermit.materials.length === 1 && newPermit.materials[0].description === 'N/A') {
+    } else if (newPermit.materials.length === 1 && newPermit.materials[0].description === 'N/A' && newPermit.materials[0].serialNumber === 'N/A') {
       setNewPermit(prev => ({ 
         ...prev, 
         materials: [{ id: '1', description: '', serialNumber: '' }]
@@ -100,6 +100,25 @@ const HomePage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate required fields based on request type
+    if (newPermit.requestType !== 'material_entrance' && newPermit.requestType !== 'material_exit') {
+      if (!newPermit.vehiclePlate || newPermit.vehiclePlate === 'N/A') {
+        alert(t('permits.vehiclePlateRequired'));
+        return;
+      }
+    }
+    
+    // Validate materials for non-heavy vehicle entrance/exit requests
+    if (newPermit.requestType !== 'heavy_vehicle_entrance_exit') {
+      const hasValidMaterials = newPermit.materials.some(material => 
+        material.description.trim() && material.serialNumber.trim()
+      );
+      if (!hasValidMaterials) {
+        alert(t('permits.materialsRequired'));
+        return;
+      }
+    }
     
     // Validate permit number format
     if (!validatePermitNumber(newPermit.permitNumber)) {
@@ -339,7 +358,7 @@ const HomePage: React.FC = () => {
               className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
             >
               <option value="">{t('permits.filterRegion')}</option>
-              {REGIONS.map(region => (
+              {(user?.region || []).map(region => (
                 <option key={region} value={region}>
                   {t(`regions.${region}`)}
                 </option>
@@ -644,7 +663,7 @@ const HomePage: React.FC = () => {
                       required
                       disabled={submitting}
                     >
-                      {REQUEST_TYPES.map(type => (
+                      {(user?.region || []).map(region => (
                         <option key={type} value={type}>
                           {t(`requestTypes.${type}`)}
                         </option>

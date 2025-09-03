@@ -6,6 +6,7 @@ interface VehiclePlateInputProps {
   onChange: (value: string) => void;
   disabled?: boolean;
   required?: boolean;
+  isRequired?: boolean;
   className?: string;
 }
 
@@ -14,6 +15,7 @@ const VehiclePlateInput: React.FC<VehiclePlateInputProps> = ({
   onChange,
   disabled = false,
   required = false,
+  isRequired = false,
   className = ''
 }) => {
   const { language } = useLanguage();
@@ -53,6 +55,12 @@ const VehiclePlateInput: React.FC<VehiclePlateInputProps> = ({
     const newDigits = [...digits];
     newDigits[index] = newValue;
     
+    // Auto-focus next field
+    if (newValue && index < 3) {
+      const nextInput = document.querySelector(`input[data-digit="${index + 1}"]`) as HTMLInputElement;
+      if (nextInput) nextInput.focus();
+    }
+    
     updateValue(newDigits, letters);
   };
 
@@ -64,6 +72,12 @@ const VehiclePlateInput: React.FC<VehiclePlateInputProps> = ({
     
     const newLetters = [...letters];
     newLetters[index] = newValue.toUpperCase();
+    
+    // Auto-focus next field
+    if (newValue && index < 2) {
+      const nextInput = document.querySelector(`input[data-letter="${index + 1}"]`) as HTMLInputElement;
+      if (nextInput) nextInput.focus();
+    }
     
     updateValue(digits, newLetters);
   };
@@ -166,6 +180,7 @@ const VehiclePlateInput: React.FC<VehiclePlateInputProps> = ({
           {digits.map((digit, index) => (
             <input
               key={`digit-${index}`}
+              data-digit={index}
               type="text"
               value={digit}
               onChange={(e) => handleDigitChange(index, e.target.value)}
@@ -185,6 +200,8 @@ const VehiclePlateInput: React.FC<VehiclePlateInputProps> = ({
           {letters.map((letter, index) => (
             <input
               key={`letter-${index}`}
+              data-letter={index}
+              data-letter={index}
               type="text"
               value={letter}
               onChange={(e) => handleLetterChange(index, e.target.value)}

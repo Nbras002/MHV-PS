@@ -111,7 +111,9 @@
     "cannotReopenTime": "Cannot reopen permit after one hour has passed since closure",
     "cannotReopenUser": "Permit can only be reopened by the same user who closed it or by an Administrator",
     "permitNumberFormat": "Format: 3 letters + digits (e.g., MHV1234567)",
-    "materialLimitReached": "Maximum of 50 materials allowed per permit"
+    "materialLimitReached": "Maximum of 50 materials allowed per permit",
+    "vehiclePlateRequired": "Vehicle license plate is required for this request type",
+    "materialsRequired": "At least one material with description and serial number is required"
   },
   "users": {
     "title": "User Management",

@@ -17,7 +17,9 @@ export default defineConfig({
   },
   preview: {
     host: '0.0.0.0',
-    port: process.env.PORT ? parseInt(process.env.PORT) : 4173
+    port: process.env.PORT ? parseInt(process.env.PORT) : 4173,
+    // Handle client-side routing
+    open: false
   },
   optimizeDeps: {
     exclude: ['lucide-react'],
@@ -25,7 +27,11 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
+    // Generate fallback for SPA routing
     rollupOptions: {
+      input: {
+        main: './index.html'
+      },
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],

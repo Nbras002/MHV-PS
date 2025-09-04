@@ -92,7 +92,8 @@ api.interceptors.response.use(
       method: error.config?.method?.toUpperCase(),
       baseURL: error.config?.baseURL,
       message: error.message,
-      data: error.response?.data
+      data: error.response?.data,
+      fullURL: error.config ? `${error.config.baseURL}${error.config.url}` : 'unknown'
     });
 
     if (error.response?.status === 401) {
@@ -103,7 +104,11 @@ api.interceptors.response.use(
     
     // Handle network errors
     if (!error.response) {
-      console.error('Network error:', error.message);
+      console.error('❌ Network error - Backend may be down:', {
+        message: error.message,
+        code: error.code,
+        config: error.config
+      });
     }
     
     return Promise.reject(error);

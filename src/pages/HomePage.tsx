@@ -101,9 +101,18 @@ const HomePage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('🔄 Form submission started with data:', newPermit);
+    
     // Validate required fields based on request type
-    if (newPermit.requestType !== 'material_entrance' && newPermit.requestType !== 'material_exit') {
-      if (!newPermit.vehiclePlate || newPermit.vehiclePlate === 'N/A') {
+    const requiresVehiclePlate = [
+      'heavy_vehicle_entrance_exit',
+      'heavy_vehicle_entrance', 
+      'heavy_vehicle_exit'
+    ].includes(newPermit.requestType);
+    
+    if (requiresVehiclePlate) {
+      if (!newPermit.vehiclePlate || newPermit.vehiclePlate === 'N/A' || newPermit.vehiclePlate.trim() === '') {
+        console.log('❌ Vehicle plate validation failed');
         alert(t('permits.vehiclePlateRequired'));
         return;
       }
@@ -112,9 +121,11 @@ const HomePage: React.FC = () => {
     // Validate materials for non-heavy vehicle entrance/exit requests
     if (newPermit.requestType !== 'heavy_vehicle_entrance_exit') {
       const hasValidMaterials = newPermit.materials.some(material => 
-        material.description.trim() && material.serialNumber.trim()
+        material.description.trim() && material.serialNumber.trim() &&
+        material.description !== 'N/A' && material.serialNumber !== 'N/A'
       );
       if (!hasValidMaterials) {
+        console.log('❌ Materials validation failed');
         alert(t('permits.materialsRequired'));
         return;
       }
@@ -122,32 +133,38 @@ const HomePage: React.FC = () => {
     
     // Validate permit number format
     if (!validatePermitNumber(newPermit.permitNumber)) {
+      console.log('❌ Permit number validation failed');
       alert(t('permits.invalidPermitNumber'));
       return;
     }
     
+    console.log('✅ All validations passed, submitting...');
     setSubmitting(true);
     
     try {
       console.log('🔄 Submitting permit data:', newPermit);
       if (editingPermit) {
+        console.log('🔄 Updating existing permit:', editingPermit.id);
         await updatePermit(editingPermit.id, newPermit);
         logActivity('update_permit', `Updated permit ${newPermit.permitNumber}`);
       } else {
+        console.log('🔄 Creating new permit');
         await addPermit(newPermit);
         logActivity('create_permit', `Created permit ${newPermit.permitNumber}`);
       }
       
+      console.log('✅ Permit operation completed successfully');
       resetForm();
     } catch (error: any) {
       console.error('Submit error details:', {
         message: error.message,
         response: error.response?.data,
         status: error.response?.status,
-        config: error.config
+        config: error.config,
+        stack: error.stack
       });
       const errorMessage = error.response?.data?.error || error.message || t('common.error');
-      alert(`Error: ${errorMessage}`);
+      alert(`${t('common.error')}: ${errorMessage}`);
     } finally {
       setSubmitting(false);
     }
@@ -188,9 +205,12 @@ const HomePage: React.FC = () => {
   const handleDelete = async (permitId: string) => {
     if (window.confirm(`${t('permits.delete')}\n\n${t('permits.deleteConfirm')}`)) {
       try {
+        console.log('🔄 Deleting permit:', permitId);
         await deletePermit(permitId);
         logActivity('delete_permit', `Deleted permit`);
+        console.log('✅ Permit deleted successfully');
       } catch (error: any) {
+        console.error('❌ Delete permit error:', error);
         alert(error.response?.data?.error || t('common.error'));
       }
     }
@@ -199,9 +219,12 @@ const HomePage: React.FC = () => {
   const handleClose = async (permit: Permit) => {
     if (window.confirm(`${t('permits.closePermit')}\n\n${t('permits.closeConfirm')}`)) {
       try {
+        console.log('🔄 Closing permit:', permit.id);
         await closePermit(permit.id);
         logActivity('close_permit', `Closed permit ${permit.permitNumber}`);
+        console.log('✅ Permit closed successfully');
       } catch (error: any) {
+        console.error('❌ Close permit error:', error);
         alert(error.response?.data?.error || t('common.error'));
       }
     }
@@ -210,11 +233,14 @@ const HomePage: React.FC = () => {
   const handleReopen = async (permit: Permit) => {
     if (window.confirm(`${t('permits.reopenPermit')}\n\n${t('permits.reopenConfirm')}`)) {
       try {
+        console.log('🔄 Reopening permit:', permit.id);
         const success = await reopenPermit(permit.id);
         if (success) {
           logActivity('reopen_permit', `Reopened permit ${permit.permitNumber}`);
+          console.log('✅ Permit reopened successfully');
         }
       } catch (error: any) {
+        console.error('❌ Reopen permit error:', error);
         alert(error.response?.data?.error || t('common.error'));
       }
     }
@@ -663,7 +689,7 @@ const HomePage: React.FC = () => {
                       required
                       disabled={submitting}
                     >
-                      {(user?.region || []).map(region => (
+                      {REQUEST_TYPES.map(type => (
                         <option key={type} value={type}>
                           {t(`requestTypes.${type}`)}
                         </option>

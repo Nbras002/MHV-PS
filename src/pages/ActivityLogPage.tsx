@@ -183,7 +183,7 @@ const ActivityLogPage: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500 text-center">
-                      {translateActivityDetails(activity.action, activity.details)}
+                      {activity.details}
                     </td>
                   </tr>
                 ))
@@ -194,75 +194,6 @@ const ActivityLogPage: React.FC = () => {
       </div>
     </div>
   );
-
-  function translateActivityDetails(action: string, details: string) {
-    // Extract specific information from details
-    const permitNumberMatch = details.match(/permit\s+([A-Z0-9]+)/i);
-    const userNameMatch = details.match(/user\s+([^\s]+)/i);
-    const carrierMatch = details.match(/for\s+([^$]+)$/i);
-
-    switch (action) {
-      case 'create_permit':
-        if (permitNumberMatch) {
-          return t('activityLog.details.create_permit', { permitNumber: permitNumberMatch[1] });
-        }
-        return t('activityLog.details.create_permit');
-
-      case 'update_permit':
-        if (permitNumberMatch) {
-          return t('activityLog.details.update_permit', { permitNumber: permitNumberMatch[1] });
-        }
-        return t('activityLog.details.update_permit');
-
-      case 'delete_permit':
-        if (permitNumberMatch) {
-          const carrierName = carrierMatch ? carrierMatch[1].trim() : '';
-          // إذا أردت إضافة ترجمة للناقل أضف مفتاح خاص في ملف الترجمة
-          return t('activityLog.details.delete_permit', { permitNumber: permitNumberMatch[1], carrierName });
-        }
-        return t('activityLog.details.delete_permit');
-
-      case 'close_permit':
-        if (permitNumberMatch) {
-          return t('activityLog.details.close_permit', { permitNumber: permitNumberMatch[1] });
-        }
-        return t('activityLog.details.close_permit');
-
-      case 'reopen_permit':
-        if (permitNumberMatch) {
-          return t('activityLog.details.reopen_permit', { permitNumber: permitNumberMatch[1] });
-        }
-        return t('activityLog.details.reopen_permit');
-
-      case 'create_user':
-        if (userNameMatch) {
-          return t('activityLog.details.create_user', { username: userNameMatch[1] });
-        }
-        return t('activityLog.details.create_user');
-
-      case 'update_user':
-        if (userNameMatch) {
-          return t('activityLog.details.update_user', { username: userNameMatch[1] });
-        }
-        return t('activityLog.details.update_user');
-
-      case 'delete_user':
-        if (userNameMatch) {
-          return t('activityLog.details.delete_user', { username: userNameMatch[1] });
-        }
-        return t('activityLog.details.delete_user');
-
-      case 'export_permits':
-        const countMatch = details.match(/(\d+)/);
-        if (countMatch) {
-          return t('activityLog.details.export_permits', { count: countMatch[1] });
-        }
-        return t('activityLog.details.export_permits');
-
-      default:
-        return details;
-    }
-  }
 };
 
 export default ActivityLogPage;

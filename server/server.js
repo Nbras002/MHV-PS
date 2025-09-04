@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
+import path from 'path';
 import { testConnection } from './config/database.js';
 
 // Import routes
@@ -114,22 +115,41 @@ app.use('/users', authenticateToken, userRoutes);
 app.use('/activity', authenticateToken, activityRoutes);
 app.use('/statistics', authenticateToken, statisticsRoutes);
 
-// 404 handler
-app.use('*', (req, res) => {
-  res.status(404).json({
-    error: 'Route not found',
-    path: req.originalUrl,
-    method: req.method,
-    availableRoutes: [
-      '/health',
-      '/api/auth/login',
-      '/api/permits',
-      '/api/users',
-      '/api/activity',
-      '/api/statistics'
-    ]
+// Serve static files in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('dist'));
+  
+  // Handle client-side routing - serve index.html for all non-API routes
+  app.get('*', (req, res) => {
+    // Don't serve index.html for API routes
+    if (req.path.startsWith('/api/') || req.path.startsWith('/health')) {
+      return res.status(404).json({
+        error: 'API route not found',
+        path: req.originalUrl,
+        method: req.method
+      });
+    }
+    
+    res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
   });
-});
+} else {
+  // 404 handler for development
+  app.use('*', (req, res) => {
+    res.status(404).json({
+      error: 'Route not found',
+      path: req.originalUrl,
+      method: req.method,
+      availableRoutes: [
+        '/health',
+        '/api/auth/login',
+        '/api/permits',
+        '/api/users',
+        '/api/activity',
+        '/api/statistics'
+      ]
+    });
+  });
+}
 
 // Error handling middleware
 app.use(errorHandler);

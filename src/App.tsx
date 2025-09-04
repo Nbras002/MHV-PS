@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import Layout from './components/Layout/Layout';
@@ -96,6 +96,7 @@ const ErrorBoundary: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
 const AppRoutes: React.FC = () => {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   // Initialize activity tracking when user is logged in
   React.useEffect(() => {
@@ -109,6 +110,14 @@ const AppRoutes: React.FC = () => {
     };
   }, [user]);
 
+  // Handle client-side routing
+  React.useEffect(() => {
+    // Prevent navigation to unknown routes
+    const validRoutes = ['/', '/control-panel', '/statistics', '/activity-log'];
+    if (user && !validRoutes.includes(location.pathname)) {
+      window.history.replaceState(null, '', '/');
+    }
+  }, [location.pathname, user]);
   if (loading) {
     return <LoadingSpinner />;
   }

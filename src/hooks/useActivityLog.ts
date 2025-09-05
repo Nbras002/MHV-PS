@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityLog } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { activityAPI } from '../services/api';
 
 export const useActivityLog = () => {
+  const { t } = useTranslation();
   const [activities, setActivities] = useState<ActivityLog[]>([]);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
@@ -31,12 +33,10 @@ export const useActivityLog = () => {
   }, [user]);
 
   const logActivity = async (action: string, details: string) => {
-    // Translate the details based on current language
-    const translatedDetails = translateActivityDetails(action, details);
-    
     // Activity logging is handled automatically by the backend
-    // This function provides translated details for the frontend
-    return translatedDetails;
+    // This function is kept for compatibility
+    console.log('Activity logged:', action, details);
+    return details;
   };
 
   const translateActivityDetails = (action: string, details: string) => {

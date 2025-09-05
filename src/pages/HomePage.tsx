@@ -113,7 +113,7 @@ const HomePage: React.FC = () => {
     if (requiresVehiclePlate) {
       if (!newPermit.vehiclePlate || newPermit.vehiclePlate === 'N/A' || newPermit.vehiclePlate.trim() === '') {
         console.log('❌ Vehicle plate validation failed');
-        alert(t('permits.vehiclePlateRequired'));
+        alert('Vehicle license plate is required for this request type');
         return;
       }
     }
@@ -126,7 +126,7 @@ const HomePage: React.FC = () => {
       );
       if (!hasValidMaterials) {
         console.log('❌ Materials validation failed');
-        alert(t('permits.materialsRequired'));
+        alert('At least one material with description and serial number is required');
         return;
       }
     }
@@ -134,7 +134,7 @@ const HomePage: React.FC = () => {
     // Validate permit number format
     if (!validatePermitNumber(newPermit.permitNumber)) {
       console.log('❌ Permit number validation failed');
-      alert(t('permits.invalidPermitNumber'));
+      alert('Permit number must be in format: three letters followed by digits (e.g., MHV1234567)');
       return;
     }
     
@@ -146,11 +146,11 @@ const HomePage: React.FC = () => {
       if (editingPermit) {
         console.log('🔄 Updating existing permit:', editingPermit.id);
         await updatePermit(editingPermit.id, newPermit);
-        logActivity('update_permit', `Updated permit ${newPermit.permitNumber}`);
+        await logActivity('update_permit', `Updated permit ${newPermit.permitNumber}`);
       } else {
         console.log('🔄 Creating new permit');
         await addPermit(newPermit);
-        logActivity('create_permit', `Created permit ${newPermit.permitNumber}`);
+        await logActivity('create_permit', `Created permit ${newPermit.permitNumber}`);
       }
       
       console.log('✅ Permit operation completed successfully');
@@ -163,8 +163,8 @@ const HomePage: React.FC = () => {
         config: error.config,
         stack: error.stack
       });
-      const errorMessage = error.response?.data?.error || error.message || t('common.error');
-      alert(`${t('common.error')}: ${errorMessage}`);
+      const errorMessage = error.response?.data?.error || error.message || 'An error occurred';
+      alert(`Error: ${errorMessage}`);
     } finally {
       setSubmitting(false);
     }
@@ -203,45 +203,45 @@ const HomePage: React.FC = () => {
   };
 
   const handleDelete = async (permitId: string) => {
-    if (window.confirm(`${t('permits.delete')}\n\n${t('permits.deleteConfirm')}`)) {
+    if (window.confirm('Delete Permit\n\nAre you sure you want to delete this permit?')) {
       try {
         console.log('🔄 Deleting permit:', permitId);
         await deletePermit(permitId);
-        logActivity('delete_permit', `Deleted permit`);
+        await logActivity('delete_permit', `Deleted permit`);
         console.log('✅ Permit deleted successfully');
       } catch (error: any) {
         console.error('❌ Delete permit error:', error);
-        alert(error.response?.data?.error || t('common.error'));
+        alert(error.response?.data?.error || 'An error occurred');
       }
     }
   };
 
   const handleClose = async (permit: Permit) => {
-    if (window.confirm(`${t('permits.closePermit')}\n\n${t('permits.closeConfirm')}`)) {
+    if (window.confirm('Close Permit\n\nAre you sure you want to close this permit?')) {
       try {
         console.log('🔄 Closing permit:', permit.id);
         await closePermit(permit.id);
-        logActivity('close_permit', `Closed permit ${permit.permitNumber}`);
+        await logActivity('close_permit', `Closed permit ${permit.permitNumber}`);
         console.log('✅ Permit closed successfully');
       } catch (error: any) {
         console.error('❌ Close permit error:', error);
-        alert(error.response?.data?.error || t('common.error'));
+        alert(error.response?.data?.error || 'An error occurred');
       }
     }
   };
 
   const handleReopen = async (permit: Permit) => {
-    if (window.confirm(`${t('permits.reopenPermit')}\n\n${t('permits.reopenConfirm')}`)) {
+    if (window.confirm('Reopen Permit\n\nAre you sure you want to reopen this permit?')) {
       try {
         console.log('🔄 Reopening permit:', permit.id);
         const success = await reopenPermit(permit.id);
         if (success) {
-          logActivity('reopen_permit', `Reopened permit ${permit.permitNumber}`);
+          await logActivity('reopen_permit', `Reopened permit ${permit.permitNumber}`);
           console.log('✅ Permit reopened successfully');
         }
       } catch (error: any) {
         console.error('❌ Reopen permit error:', error);
-        alert(error.response?.data?.error || t('common.error'));
+        alert(error.response?.data?.error || 'An error occurred');
       }
     }
   };
@@ -249,7 +249,7 @@ const HomePage: React.FC = () => {
   const handleExport = () => {
     exportPermitsToExcel(filteredPermits);
     logActivity('export_permits', `Exported ${filteredPermits.length} permits`);
-    alert(t('permits.exportSuccess'));
+    alert('Data exported successfully!');
   };
 
   const handleQRScan = (result: string) => {
@@ -257,7 +257,7 @@ const HomePage: React.FC = () => {
     if (validatePermitNumber(result)) {
       setSearchTerm(result);
     } else {
-      alert(t('common.invalidQRFormat'));
+      alert('Invalid QR code format');
     }
   };
 
@@ -267,7 +267,7 @@ const HomePage: React.FC = () => {
 
   const addMaterial = () => {
     if (newPermit.materials.length >= 50) {
-      alert(t('permits.materialLimitReached'));
+      alert('Maximum of 50 materials allowed per permit');
       return;
     }
     

@@ -2,7 +2,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import { body, validationResult } from 'express-validator';
 import { supabase } from '../config/database.js';
-import { requireRole, requirePermission } from '../middleware/auth.js';
+import { requireRole, requirePermission, authenticateToken } from '../middleware/auth.js';
 
 const router = express.Router();
 

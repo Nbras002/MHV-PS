@@ -95,7 +95,8 @@ router.post('/', [
       .from('activity_logs')
       .insert({
         user_id: req.user.id,
-        user_name: `${req.user.first_name} ${req.user.last_name}`,
+        name: `${req.user.first_name} ${req.user.last_name}`,
+        username: req.user.username,
         action: 'create_user',
         details: `Created user ${username}`,
         ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
@@ -191,8 +192,8 @@ router.put('/:id', [
         username: req.user.username,
         action: 'update_user',
         details: `Updated user ${user.username}`,
-        ip: req.clientIP || 'unknown',
-        user_agent: req.userAgent || 'unknown'
+        ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
+        user_agent: req.get('User-Agent') || 'unknown'
       });
 
     res.json({ user: formattedUser });
@@ -203,7 +204,7 @@ router.put('/:id', [
 });
 
 // Delete user (admin only)
-router.delete('/:id', requirePermission('canManageUsers'), async (req, res) => {
+router.delete('/:id', authenticateToken, requirePermission('canManageUsers'), async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -241,10 +242,9 @@ router.delete('/:id', requirePermission('canManageUsers'), async (req, res) => {
         username: req.user.username,
         action: 'delete_user',
         details: `Deleted user ${userToDelete.username}`,
-        ip: req.clientIP || 'unknown',
-        user_agent: req.userAgent || 'unknown'
-      }
-      )
+        ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
+        user_agent: req.get('User-Agent') || 'unknown'
+      });
 
     res.json({ message: 'User deleted successfully' });
   } catch (error) {
@@ -254,7 +254,7 @@ router.delete('/:id', requirePermission('canManageUsers'), async (req, res) => {
 });
 
 // Get role permissions
-router.get('/role-permissions', async (req, res) => {
+router.get('/role-permissions', authenticateToken, async (req, res) => {
   try {
     const { data: permissions, error } = await supabase
       .from('role_permissions')
@@ -274,6 +274,7 @@ router.get('/role-permissions', async (req, res) => {
 
 // Update role permissions (admin only)
 router.put('/role-permissions/:role', [
+  authenticateToken,
   requireRole(['admin']),
   body('permissions').isObject().withMessage('Permissions must be an object')
 ], async (req, res) => {

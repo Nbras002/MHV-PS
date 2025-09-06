@@ -192,7 +192,8 @@ router.post('/', [
       .from('activity_logs')
       .insert({
         user_id: req.user.id,
-        user_name: `${req.user.first_name} ${req.user.last_name}`,
+        name: `${req.user.first_name} ${req.user.last_name}`,
+        username: req.user.username,
         action: 'create_permit',
         details: `Created permit ${permit.permit_number}`,
         ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
@@ -298,7 +299,8 @@ router.put('/:id', [
       .from('activity_logs')
       .insert({
         user_id: req.user.id,
-        user_name: `${req.user.first_name} ${req.user.last_name}`,
+        name: `${req.user.first_name} ${req.user.last_name}`,
+        username: req.user.username,
         action: 'update_permit',
         details: `Updated permit ${permit.permit_number}`,
         ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
@@ -380,7 +382,8 @@ router.patch('/:id/close', requirePermission('canClosePermits'), async (req, res
       .from('activity_logs')
       .insert({
         user_id: req.user.id,
-        user_name: `${req.user.first_name} ${req.user.last_name}`,
+        name: `${req.user.first_name} ${req.user.last_name}`,
+        username: req.user.username,
         action: 'close_permit',
         details: `Closed permit ${permit.permit_number}`,
         ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
@@ -469,8 +472,8 @@ router.patch('/:id/reopen', requirePermission('canReopenPermits'), async (req, r
         username: req.user.username,
         action: 'reopen_permit',
         details: `Reopened permit ${permit.permit_number}`,
-        ip: req.clientIP || 'unknown',
-        user_agent: req.userAgent || 'unknown'
+        ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
+        user_agent: req.get('User-Agent') || 'unknown'
       });
 
     res.json({ permit: formattedPermit });
@@ -481,7 +484,7 @@ router.patch('/:id/reopen', requirePermission('canReopenPermits'), async (req, r
 });
 
 // Delete permit
-router.delete('/:id', requirePermission('canDeletePermits'), async (req, res) => {
+router.delete('/:id', authenticateToken, requirePermission('canDeletePermits'), async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -514,10 +517,9 @@ router.delete('/:id', requirePermission('canDeletePermits'), async (req, res) =>
         username: req.user.username,
         action: 'delete_permit',
         details: `Deleted permit ${existingPermit.permit_number} for ${existingPermit.carrier_name}`,
-        ip: req.clientIP || 'unknown',
-        user_agent: req.userAgent || 'unknown'
-      }
-      )
+        ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
+        user_agent: req.get('User-Agent') || 'unknown'
+      });
 
     res.json({ message: 'Permit deleted successfully' });
   } catch (error) {

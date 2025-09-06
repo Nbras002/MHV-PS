@@ -103,10 +103,10 @@ app.get('/', (req, res) => {
 
 // API routes
 app.use('/api/auth', authRoutes);
-app.use('/api/permits', authenticateToken, permitRoutes);
-app.use('/api/users', authenticateToken, userRoutes);
-app.use('/api/activity', authenticateToken, activityRoutes);
-app.use('/api/statistics', authenticateToken, statisticsRoutes);
+app.use('/api/permits', permitRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/activity', activityRoutes);
+app.use('/api/statistics', statisticsRoutes);
 
 // Legacy routes without /api prefix for backward compatibility
 app.use('/auth', authRoutes);
@@ -117,12 +117,16 @@ app.use('/statistics', authenticateToken, statisticsRoutes);
 
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('dist'));
+  // Serve static files
+  app.use(express.static('dist', {
+    maxAge: '1d',
+    etag: false
+  }));
   
   // Handle client-side routing - serve index.html for all non-API routes
   app.get('*', (req, res) => {
     // Don't serve index.html for API routes
-    if (req.path.startsWith('/api/') || req.path.startsWith('/health')) {
+    if (req.path.startsWith('/api/') || req.path.startsWith('/health') || req.path.startsWith('/auth/')) {
       return res.status(404).json({
         error: 'API route not found',
         path: req.originalUrl,
@@ -130,7 +134,8 @@ if (process.env.NODE_ENV === 'production') {
       });
     }
     
-    res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
+    // Serve index.html for all other routes (SPA routing)
+    res.sendFile(path.resolve('dist/index.html'));
   });
 } else {
   // 404 handler for development

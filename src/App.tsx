@@ -110,7 +110,20 @@ const AppRoutes: React.FC = () => {
     };
   }, [user]);
 
-  // ...existing code...
+  // Handle client-side routing
+  React.useEffect(() => {
+    // Handle browser back/forward navigation
+    const handlePopState = () => {
+      // Force re-render when navigating
+      window.location.reload();
+    };
+    
+    window.addEventListener('popstate', handlePopState);
+    
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [location.pathname, user]);
   if (loading) {
     return <LoadingSpinner />;
   }

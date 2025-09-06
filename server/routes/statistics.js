@@ -1,11 +1,11 @@
 import express from 'express';
 import { supabase } from '../config/database.js';
-import { requirePermission } from '../middleware/auth.js';
+import { authenticateToken, requirePermission } from '../middleware/auth.js';
 
 const router = express.Router();
 
 // Get statistics
-router.get('/', requirePermission('canViewStatistics'), async (req, res) => {
+router.get('/', authenticateToken, requirePermission('canViewStatistics'), async (req, res) => {
   try {
     // Get total permits
     const { count: totalPermits, error: totalError } = await supabase

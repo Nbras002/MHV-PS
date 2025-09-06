@@ -106,7 +106,7 @@ router.post('/login', [
     const token = jwt.sign(
       { userId: user.id, username: user.username, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
+      { expiresIn: process.env.JWT_EXPIRES_IN || '1h' }
     );
 
     console.log('🎫 JWT token generated for user:', user.username);

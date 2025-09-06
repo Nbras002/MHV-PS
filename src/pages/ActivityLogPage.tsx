@@ -184,7 +184,6 @@ const ActivityLogPage: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500 text-center">
                       {translateActivityDetails(activity.action, activity.details)}
-                      {activity.details}
                     </td>
                   </tr>
                 ))

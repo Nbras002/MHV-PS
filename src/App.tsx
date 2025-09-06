@@ -110,14 +110,7 @@ const AppRoutes: React.FC = () => {
     };
   }, [user]);
 
-  // Handle client-side routing
-  React.useEffect(() => {
-    // Prevent navigation to unknown routes
-    const validRoutes = ['/', '/control-panel', '/statistics', '/activity-log'];
-    if (user && !validRoutes.includes(location.pathname)) {
-      window.history.replaceState(null, '', '/');
-    }
-  }, [location.pathname, user]);
+  // ...existing code...
   if (loading) {
     return <LoadingSpinner />;
   }

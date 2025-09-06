@@ -8,7 +8,7 @@ import { Search, Filter, Calendar, RefreshCw } from 'lucide-react';
 const ActivityLogPage: React.FC = () => {
   const { t } = useTranslation();
   const { activities, loading, fetchActivities } = useActivityLog();
-  
+
   const [searchTerm, setSearchTerm] = useState('');
   const [filterAction, setFilterAction] = useState('');
   const [filterDate, setFilterDate] = useState('');
@@ -32,7 +32,7 @@ const ActivityLogPage: React.FC = () => {
     if (searchTerm) params.search = searchTerm;
     if (filterAction) params.action = filterAction;
     if (filterDate) params.date = filterDate;
-    
+
     fetchActivities(params);
   };
 
@@ -93,7 +93,7 @@ const ActivityLogPage: React.FC = () => {
               className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
           </div>
-          
+
           <div className="relative">
             <Filter className="w-5 h-5 text-gray-400 absolute left-3 top-3" />
             <select
@@ -109,7 +109,7 @@ const ActivityLogPage: React.FC = () => {
               ))}
             </select>
           </div>
-          
+
           <div className="relative">
             <Calendar className="w-5 h-5 text-gray-400 absolute left-3 top-3" />
             <input
@@ -119,7 +119,7 @@ const ActivityLogPage: React.FC = () => {
               className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
           </div>
-          
+
           <button
             onClick={handleClear}
             className="flex items-center justify-center space-x-2 bg-gray-100 text-gray-700 px-4 py-2.5 rounded-lg hover:bg-gray-200 transition-colors"
@@ -183,6 +183,7 @@ const ActivityLogPage: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500 text-center">
+                      {translateActivityDetails(activity.action, activity.details)}
                       {activity.details}
                     </td>
                   </tr>
@@ -195,7 +196,7 @@ const ActivityLogPage: React.FC = () => {
     </div>
   );
 
-    function translateActivityDetails(action: string, details: string) {
+  function translateActivityDetails(action: string, details: string) {
     // Extract specific information from details
     const permitNumberMatch = details.match(/permit\s+([A-Z0-9]+)/i);
     const userNameMatch = details.match(/user\s+([^\s]+)/i);

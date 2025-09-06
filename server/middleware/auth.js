@@ -4,7 +4,7 @@ import { supabase } from '../config/database.js';
 export const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
-  
+
   // Get real IP address
   const getClientIP = (req) => {
     return req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
@@ -29,15 +29,18 @@ export const authenticateToken = async (req, res, next) => {
   console.log('🔐 Auth middleware - Token present:', !!token);
   console.log('🔐 Auth middleware - Path:', req.path);
   console.log('🔐 Auth middleware - Method:', req.method);
+  console.log('🔐 Auth middleware - Raw token:', token);
+
   if (!token) {
     console.log('❌ No token provided');
     return res.status(401).json({ error: 'Access token required' });
   }
 
   try {
+    console.log('🔐 Auth middleware - JWT_SECRET:', process.env.JWT_SECRET);
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log('✅ Token decoded successfully for user:', decoded.userId);
-    
+    console.log('✅ Token decoded successfully:', decoded);
+
     // Fetch user from database to ensure they still exist and get latest data
     const { data: user, error } = await supabase
       .from('users')
@@ -46,15 +49,15 @@ export const authenticateToken = async (req, res, next) => {
       .single();
 
     if (error || !user) {
-      console.log('❌ User not found in database:', error?.message);
+      console.log('❌ User not found in database:', error?.message, 'UserId:', decoded.userId);
       return res.status(401).json({ error: 'Invalid token or user not found' });
     }
 
-    console.log('✅ User authenticated:', user.username);
+    console.log('✅ User authenticated:', user.username, 'UserId:', user.id);
     req.user = user;
     next();
   } catch (error) {
-    console.error('❌ Token verification error:', error.message);
+    console.error('❌ Token verification error:', error.message, 'Token:', token);
     return res.status(403).json({ error: 'Invalid or expired token' });
   }
 };

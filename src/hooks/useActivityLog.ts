@@ -17,6 +17,7 @@ export const useActivityLog = () => {
     try {
       setLoading(true);
       const response = await activityAPI.getAll(params);
+      console.log('Activity API response:', response);
       setActivities(response.data.activities);
     } catch (error) {
       console.error('Failed to fetch activities:', error);

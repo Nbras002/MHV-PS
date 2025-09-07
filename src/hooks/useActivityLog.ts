@@ -11,10 +11,9 @@ export const useActivityLog = () => {
   const { user } = useAuth();
 
   const fetchActivities = async (params?: any) => {
-    if (!user || !['admin', 'manager', 'security_officer'].includes(user.role)) {
+    if (!user) {
       return;
     }
-
     try {
       setLoading(true);
       const response = await activityAPI.getAll(params);
@@ -27,7 +26,7 @@ export const useActivityLog = () => {
   };
 
   useEffect(() => {
-    if (user && ['admin', 'manager', 'security_officer'].includes(user.role)) {
+    if (user) {
       fetchActivities();
     }
   }, [user]);

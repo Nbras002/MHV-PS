@@ -248,19 +248,7 @@ const HomePage: React.FC = () => {
 
   const handleExport = () => {
     exportPermitsToExcel(filteredPermits);
-    // Log export activity
-    fetch('/api/activity', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-      },
-      body: JSON.stringify({
-        action: 'export_permits',
-        details: `Exported ${filteredPermits.length} permits`
-      })
-    }).catch(console.error);
-    
+    logActivity('export_permits', `Exported ${filteredPermits.length} permits`);
     alert('Data exported successfully!');
   };
 

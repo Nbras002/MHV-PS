@@ -2,7 +2,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import { body, validationResult } from 'express-validator';
 import { supabase } from '../config/database.js';
-import { authenticateToken, requireRole, requirePermission } from '../middleware/auth.js';
+import { requireRole, requirePermission } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -95,8 +95,7 @@ router.post('/', [
       .from('activity_logs')
       .insert({
         user_id: req.user.id,
-        name: `${req.user.first_name} ${req.user.last_name}`,
-        username: req.user.username,
+        user_name: `${req.user.first_name} ${req.user.last_name}`,
         action: 'create_user',
         details: `Created user ${username}`,
         ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
@@ -192,8 +191,8 @@ router.put('/:id', [
         username: req.user.username,
         action: 'update_user',
         details: `Updated user ${user.username}`,
-        ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
-        user_agent: req.get('User-Agent') || 'unknown'
+        ip: req.clientIP || 'unknown',
+        user_agent: req.userAgent || 'unknown'
       });
 
     res.json({ user: formattedUser });
@@ -204,7 +203,7 @@ router.put('/:id', [
 });
 
 // Delete user (admin only)
-router.delete('/:id', authenticateToken, requirePermission('canManageUsers'), async (req, res) => {
+router.delete('/:id', requirePermission('canManageUsers'), async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -242,9 +241,10 @@ router.delete('/:id', authenticateToken, requirePermission('canManageUsers'), as
         username: req.user.username,
         action: 'delete_user',
         details: `Deleted user ${userToDelete.username}`,
-        ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
-        user_agent: req.get('User-Agent') || 'unknown'
-      });
+        ip: req.clientIP || 'unknown',
+        user_agent: req.userAgent || 'unknown'
+      }
+      )
 
     res.json({ message: 'User deleted successfully' });
   } catch (error) {
@@ -254,7 +254,7 @@ router.delete('/:id', authenticateToken, requirePermission('canManageUsers'), as
 });
 
 // Get role permissions
-router.get('/role-permissions', authenticateToken, async (req, res) => {
+router.get('/role-permissions', async (req, res) => {
   try {
     const { data: permissions, error } = await supabase
       .from('role_permissions')
@@ -274,7 +274,6 @@ router.get('/role-permissions', authenticateToken, async (req, res) => {
 
 // Update role permissions (admin only)
 router.put('/role-permissions/:role', [
-  authenticateToken,
   requireRole(['admin']),
   body('permissions').isObject().withMessage('Permissions must be an object')
 ], async (req, res) => {

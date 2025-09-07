@@ -17,7 +17,6 @@ let inactivityTimer: NodeJS.Timeout;
 const resetInactivityTimer = () => {
   clearTimeout(inactivityTimer);
   inactivityTimer = setTimeout(() => {
-    console.log('⏰ Auto-logout due to inactivity');
     localStorage.removeItem('authToken');
     localStorage.removeItem('currentUser');
     window.location.href = '/';
@@ -113,17 +112,11 @@ const AppRoutes: React.FC = () => {
 
   // Handle client-side routing
   React.useEffect(() => {
-    // Handle browser back/forward navigation
-    const handlePopState = () => {
-      // Force re-render when navigating
-      window.location.reload();
-    };
-    
-    window.addEventListener('popstate', handlePopState);
-    
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
+    // Prevent navigation to unknown routes
+    const validRoutes = ['/', '/control-panel', '/statistics', '/activity-log'];
+    if (user && !validRoutes.includes(location.pathname)) {
+      window.history.replaceState(null, '', '/');
+    }
   }, [location.pathname, user]);
   if (loading) {
     return <LoadingSpinner />;

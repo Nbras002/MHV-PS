@@ -40,7 +40,6 @@ router.post('/login', [
 
     const { username, password } = req.body;
 
-    console.log('🔍 Searching for user:', username);
 
     // Find user
     const { data: user, error } = await supabase
@@ -49,18 +48,12 @@ router.post('/login', [
       .eq('username', username)
       .single();
 
-    console.log('👤 User query result:', {
-      found: !!user,
-      error: error?.message,
-      userId: user?.id
-    });
 
     if (error || !user) {
-      console.log('❌ User not found or error:', error?.message);
+      console.log('❌ Login failed: User not found -', username);
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    console.log('🔒 Checking password for user:', user.username);
 
     // Check password
     let isValidPassword = false;
@@ -79,18 +72,16 @@ router.post('/login', [
           .from('users')
           .update({ password: hashedPassword })
           .eq('id', user.id);
-        console.log('🔐 Password hashed for user:', user.username);
       }
     }
 
-    console.log('🔑 Password validation result:', isValidPassword);
 
     if (!isValidPassword) {
-      console.log('❌ Invalid password for user:', user.username);
+      console.log('❌ Login failed: Invalid password -', user.username);
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    console.log('✅ Login successful for user:', user.username);
+    console.log('✅ Login successful:', user.username);
 
     // Update last login
     const { error: updateError } = await supabase
@@ -109,12 +100,10 @@ router.post('/login', [
       { expiresIn: process.env.JWT_EXPIRES_IN || '1h' }
     );
 
-    console.log('🎫 JWT token generated for user:', user.username);
 
     // Remove password from response
     const { password: _, ...userWithoutPassword } = user;
 
-    console.log('📤 Sending login response for user:', user.username);
 
     res.json({
       token,

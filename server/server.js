@@ -26,17 +26,19 @@ const PORT = process.env.PORT || 10000;
 // Test database connection on startup
 testConnection();
 
+// Ensure JWT_SECRET is configured
+if (!process.env.JWT_SECRET) {
+  console.error('❌ CRITICAL: JWT_SECRET environment variable is not set!');
+  console.error('❌ The application cannot function without JWT_SECRET');
+  process.exit(1);
+}
+
 // Add request logging middleware
 app.use((req, res, next) => {
-  console.log(`📥 ${req.method} ${req.path}`, {
-    body: req.method === 'POST' ? Object.keys(req.body || {}) : undefined,
-    query: Object.keys(req.query || {}),
-    headers: {
-      'content-type': req.get('content-type'),
-      'user-agent': req.get('user-agent')?.substring(0, 50)
-    },
-    ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress
-  });
+  // Only log non-health check requests
+  if (req.path !== '/health') {
+    console.log(`📥 ${req.method} ${req.path}`);
+  }
   next();
 });
 

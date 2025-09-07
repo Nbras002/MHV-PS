@@ -17,6 +17,7 @@ let inactivityTimer: NodeJS.Timeout;
 const resetInactivityTimer = () => {
   clearTimeout(inactivityTimer);
   inactivityTimer = setTimeout(() => {
+    console.log('⏰ Auto-logout due to inactivity');
     localStorage.removeItem('authToken');
     localStorage.removeItem('currentUser');
     window.location.href = '/';

@@ -26,17 +26,19 @@ const PORT = process.env.PORT || 10000;
 // Test database connection on startup
 testConnection();
 
+// Ensure JWT_SECRET is configured
+if (!process.env.JWT_SECRET) {
+  console.error('❌ CRITICAL: JWT_SECRET environment variable is not set!');
+  console.error('❌ The application cannot function without JWT_SECRET');
+  process.exit(1);
+}
+
 // Add request logging middleware
 app.use((req, res, next) => {
-  console.log(`📥 ${req.method} ${req.path}`, {
-    body: req.method === 'POST' ? Object.keys(req.body || {}) : undefined,
-    query: Object.keys(req.query || {}),
-    headers: {
-      'content-type': req.get('content-type'),
-      'user-agent': req.get('user-agent')?.substring(0, 50)
-    },
-    ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress
-  });
+  // Only log non-health check requests
+  if (req.path !== '/health') {
+    console.log(`📥 ${req.method} ${req.path}`);
+  }
   next();
 });
 
@@ -103,10 +105,10 @@ app.get('/', (req, res) => {
 
 // API routes
 app.use('/api/auth', authRoutes);
-app.use('/api/permits', authenticateToken, permitRoutes);
-app.use('/api/users', authenticateToken, userRoutes);
-app.use('/api/activity', authenticateToken, activityRoutes);
-app.use('/api/statistics', authenticateToken, statisticsRoutes);
+app.use('/api/permits', permitRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/activity', activityRoutes);
+app.use('/api/statistics', statisticsRoutes);
 
 // Legacy routes without /api prefix for backward compatibility
 app.use('/auth', authRoutes);
@@ -117,12 +119,16 @@ app.use('/statistics', authenticateToken, statisticsRoutes);
 
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('dist'));
+  // Serve static files
+  app.use(express.static('dist', {
+    maxAge: '1d',
+    etag: false
+  }));
   
   // Handle client-side routing - serve index.html for all non-API routes
   app.get('*', (req, res) => {
     // Don't serve index.html for API routes
-    if (req.path.startsWith('/api/') || req.path.startsWith('/health')) {
+    if (req.path.startsWith('/api/') || req.path.startsWith('/health') || req.path.startsWith('/auth/')) {
       return res.status(404).json({
         error: 'API route not found',
         path: req.originalUrl,
@@ -130,7 +136,8 @@ if (process.env.NODE_ENV === 'production') {
       });
     }
     
-    res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
+    // Serve index.html for all other routes (SPA routing)
+    res.sendFile(path.resolve('dist/index.html'));
   });
 } else {
   // 404 handler for development

@@ -1,11 +1,11 @@
 import express from 'express';
 import { supabase } from '../config/database.js';
-import { requirePermission } from '../middleware/auth.js';
+import { authenticateToken, requirePermission } from '../middleware/auth.js';
 
 const router = express.Router();
 
 // Get activity logs
-router.get('/', requirePermission('canViewActivityLog'), async (req, res) => {
+router.get('/', authenticateToken, requirePermission('canViewActivityLog'), async (req, res) => {
   try {
     const { search, action, date, limit = 100, offset = 0 } = req.query;
 
@@ -104,7 +104,7 @@ router.get('/', requirePermission('canViewActivityLog'), async (req, res) => {
 });
 
 // Get unique actions for filtering
-router.get('/actions', requirePermission('canViewActivityLog'), async (req, res) => {
+router.get('/actions', authenticateToken, requirePermission('canViewActivityLog'), async (req, res) => {
   try {
     const { data: actions, error } = await supabase
       .from('activity_logs')
@@ -121,6 +121,39 @@ router.get('/actions', requirePermission('canViewActivityLog'), async (req, res)
   } catch (error) {
     console.error('Get actions error:', error);
     res.status(500).json({ error: 'Failed to fetch actions' });
+  }
+});
+
+// Create activity log entry
+router.post('/', authenticateToken, async (req, res) => {
+  try {
+    const { action, details } = req.body;
+    
+    if (!action || !details) {
+      return res.status(400).json({ error: 'Action and details are required' });
+    }
+
+    const { error } = await supabase
+      .from('activity_logs')
+      .insert({
+        user_id: req.user.id,
+        name: `${req.user.first_name} ${req.user.last_name}`,
+        username: req.user.username,
+        action,
+        details,
+        ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown',
+        user_agent: req.get('User-Agent') || 'unknown'
+      });
+
+    if (error) {
+      console.error('Activity log error:', error);
+      return res.status(500).json({ error: 'Failed to log activity' });
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Activity log error:', error);
+    res.status(500).json({ error: 'Failed to log activity' });
   }
 });
 

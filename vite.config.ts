@@ -18,8 +18,9 @@ export default defineConfig({
   preview: {
     host: '0.0.0.0',
     port: process.env.PORT ? parseInt(process.env.PORT) : 4173,
-    // Handle client-side routing
-    open: false
+    open: false,
+    // Handle client-side routing for SPA
+    historyApiFallback: true
   },
   optimizeDeps: {
     exclude: ['lucide-react'],

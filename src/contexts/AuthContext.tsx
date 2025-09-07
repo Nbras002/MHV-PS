@@ -32,16 +32,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const token = localStorage.getItem('authToken');
       if (token) {
         try {
+          console.log('🔐 AuthContext: Initializing with existing token');
           const response = await authAPI.getCurrentUser();
+          console.log('✅ AuthContext: Current user retrieved successfully:', response.data.user);
           setUser(response.data.user);
         } catch (error: any) {
-          console.error('Failed to get current user:', error);
+          console.error('❌ AuthContext: Failed to get current user:', {
+            message: error.message,
+            status: error.response?.status,
+            data: error.response?.data
+          });
           // If token is invalid, clear it
           if (error.response?.status === 401 || error.response?.status === 403) {
+            console.log('🔄 AuthContext: Clearing invalid token');
             localStorage.removeItem('authToken');
             localStorage.removeItem('currentUser');
           }
         }
+      } else {
+        console.log('ℹ️ AuthContext: No token found in localStorage');
       }
     } catch (error) {
       console.error('Auth initialization error:', error);

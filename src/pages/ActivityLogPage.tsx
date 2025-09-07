@@ -8,14 +8,6 @@ import { Search, Filter, Calendar, RefreshCw } from 'lucide-react';
 const ActivityLogPage: React.FC = () => {
   const { t } = useTranslation();
   const { activities, loading, fetchActivities } = useActivityLog();
-  // Debug: Log activities fetched from backend
-  useEffect(() => {
-    if (activities && activities.length > 0) {
-      console.log('Fetched activities:', activities);
-    } else {
-      console.log('No activities fetched or activities array is empty.');
-    }
-  }, [activities]);
   
   const [searchTerm, setSearchTerm] = useState('');
   const [filterAction, setFilterAction] = useState('');

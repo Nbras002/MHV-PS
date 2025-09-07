@@ -77,11 +77,6 @@ api.interceptors.request.use((config) => {
 // Handle auth errors and network issues
 api.interceptors.response.use(
   (response) => {
-    console.log('📥 Frontend: API Response:', {
-      status: response.status,
-      url: response.config.url,
-      method: response.config.method?.toUpperCase()
-    });
     return response;
   },
   (error) => {
@@ -96,10 +91,18 @@ api.interceptors.response.use(
       fullURL: error.config ? `${error.config.baseURL}${error.config.url}` : 'unknown'
     });
 
-    if (error.response?.status === 401) {
+    // Only clear auth on 401 for auth-related endpoints, not all 401s
+    if (error.response?.status === 401 && 
+        (error.config?.url?.includes('/auth/') || error.config?.url?.includes('/me'))) {
+      console.log('🔄 API: Clearing auth due to 401 on auth endpoint');
       localStorage.removeItem('authToken');
       localStorage.removeItem('currentUser');
-      window.location.href = '/';
+      // Don't immediately redirect, let the app handle it
+      setTimeout(() => {
+        if (!localStorage.getItem('authToken')) {
+          window.location.href = '/';
+        }
+      }, 100);
     }
     
     // Handle network errors

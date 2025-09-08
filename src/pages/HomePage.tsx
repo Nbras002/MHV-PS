@@ -207,7 +207,7 @@ const HomePage: React.FC = () => {
   };
 
   const handleDelete = async (permitId: string) => {
-    if (window.confirm('Delete Permit\n\nAre you sure you want to delete this permit?')) {
+    if (window.confirm(`${t('permits.delete')}\n\n${t('permits.deleteConfirm')}`)) {
       try {
         console.log('🔄 Deleting permit:', permitId);
         await deletePermit(permitId);
@@ -221,7 +221,7 @@ const HomePage: React.FC = () => {
   };
 
   const handleClose = async (permit: Permit) => {
-    if (window.confirm('Close Permit\n\nAre you sure you want to close this permit?')) {
+    if (window.confirm(`${t('permits.closePermit')}\n\n${t('permits.closeConfirm')}`)) {
       try {
         console.log('🔄 Closing permit:', permit.id);
         await closePermit(permit.id);
@@ -235,7 +235,7 @@ const HomePage: React.FC = () => {
   };
 
   const handleReopen = async (permit: Permit) => {
-    if (window.confirm('Reopen Permit\n\nAre you sure you want to reopen this permit?')) {
+    if (window.confirm(`${t('permits.reopenPermit')}\n\n${t('permits.reopenConfirm')}`)) {
       try {
         console.log('🔄 Reopening permit:', permit.id);
         const success = await reopenPermit(permit.id);

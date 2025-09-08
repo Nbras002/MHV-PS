@@ -9,6 +9,7 @@ import { exportPermitsToExcel } from '../utils/excel';
 import { validatePermitNumber, formatVehiclePlate } from '../utils/validation';
 import QRScanner from '../components/QRScanner';
 import VehiclePlateInput from '../components/VehiclePlateInput';
+import { usePreventBodyScroll } from '../hooks/usePreventBodyScroll';
 import { 
   Search, 
   QrCode, 

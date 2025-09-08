@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { User, REGIONS, RolePermissions, DEFAULT_ROLE_PERMISSIONS } from '../types';
 import { validatePassword, validateEmail } from '../utils/validation';
 import { usersAPI } from '../services/api';
+import { useModalScrollLock } from '../hooks/useModalScrollLock';
 import { 
   Plus, 
   Edit, 
@@ -29,6 +30,9 @@ const ControlPanelPage: React.FC = () => {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(false);
+  
+  // Lock scroll when any modal is open
+  useModalScrollLock(showForm || showPermissionsModal);
   
   const [formData, setFormData] = useState<{
     username: string;

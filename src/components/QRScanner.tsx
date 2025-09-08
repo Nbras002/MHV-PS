@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import QrScanner from 'qr-scanner';
+import { useModalScrollLock } from '../hooks/useModalScrollLock';
 import { X, Camera } from 'lucide-react';
 
 interface QRScannerProps {
@@ -14,6 +15,9 @@ const QRScanner: React.FC<QRScannerProps> = ({ onScan, onClose, isOpen }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [scanner, setScanner] = useState<QrScanner | null>(null);
   const [error, setError] = useState<string>('');
+  
+  // Lock scroll when scanner is open
+  useModalScrollLock(isOpen);
 
   useEffect(() => {
     if (isOpen && videoRef.current) {

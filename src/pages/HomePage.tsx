@@ -8,6 +8,7 @@ import { Permit, REGIONS, REQUEST_TYPES, DEFAULT_ROLE_PERMISSIONS } from '../typ
 import { exportPermitsToExcel } from '../utils/excel';
 import { validatePermitNumber, formatVehiclePlate } from '../utils/validation';
 import QRScanner from '../components/QRScanner';
+import { useModalScrollLock } from '../hooks/useModalScrollLock';
 import VehiclePlateInput from '../components/VehiclePlateInput';
 import { 
   Search, 
@@ -44,6 +45,9 @@ const HomePage: React.FC = () => {
   const [viewingPermit, setViewingPermit] = useState<Permit | null>(null);
   const [showQRScanner, setShowQRScanner] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  
+  // Lock scroll when any modal is open
+  useModalScrollLock(showAddForm || !!viewingPermit || showQRScanner);
   
   const [newPermit, setNewPermit] = useState({
     permitNumber: '',

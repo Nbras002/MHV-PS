@@ -10,6 +10,7 @@ import { validatePermitNumber, formatVehiclePlate } from '../utils/validation';
 import QRScanner from '../components/QRScanner';
 import { useModalScrollLock } from '../hooks/useModalScrollLock';
 import VehiclePlateInput from '../components/VehiclePlateInput';
+import { useAlerts } from '../hooks/useAlerts';
 import { 
   Search, 
   QrCode, 
@@ -36,6 +37,7 @@ const HomePage: React.FC = () => {
   const { language } = useLanguage();
   const { permits, loading, addPermit, updatePermit, deletePermit, closePermit, reopenPermit, generatePermitNumber, refetch } = usePermits();
   const { logActivity } = useActivityLog();
+  const { showAlert, showConfirm, showSuccess, showError } = useAlerts();
   
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRegion, setFilterRegion] = useState('');
@@ -130,7 +132,7 @@ const HomePage: React.FC = () => {
       );
       if (!hasValidMaterials) {
         console.log('❌ Materials validation failed');
-        alert('At least one material with description and serial number is required');
+        showAlert('alerts.materialsRequired');
         return;
       }
     }
@@ -138,7 +140,7 @@ const HomePage: React.FC = () => {
     // Validate permit number format
     if (!validatePermitNumber(newPermit.permitNumber)) {
       console.log('❌ Permit number validation failed');
-      alert('Permit number must be in format: three letters followed by digits (e.g., MHV1234567)');
+      showAlert('alerts.invalidPermitNumber');
       return;
     }
     
@@ -168,7 +170,7 @@ const HomePage: React.FC = () => {
         stack: error.stack
       });
       const errorMessage = error.response?.data?.error || error.message || 'An error occurred';
-      alert(`Error: ${errorMessage}`);
+      showError('common.error');
     } finally {
       setSubmitting(false);
     }
@@ -207,7 +209,7 @@ const HomePage: React.FC = () => {
   };
 
   const handleDelete = async (permitId: string) => {
-    if (window.confirm(`${t('permits.delete')}\n\n${t('permits.deleteConfirm')}`)) {
+    if (showConfirm('alerts.deletePermitMessage')) {
       try {
         console.log('🔄 Deleting permit:', permitId);
         await deletePermit(permitId);
@@ -215,13 +217,13 @@ const HomePage: React.FC = () => {
         console.log('✅ Permit deleted successfully');
       } catch (error: any) {
         console.error('❌ Delete permit error:', error);
-        alert(error.response?.data?.error || 'An error occurred');
+        showError('common.error');
       }
     }
   };
 
   const handleClose = async (permit: Permit) => {
-    if (window.confirm(`${t('permits.closePermit')}\n\n${t('permits.closeConfirm')}`)) {
+    if (showConfirm('alerts.closePermitMessage')) {
       try {
         console.log('🔄 Closing permit:', permit.id);
         await closePermit(permit.id);
@@ -229,13 +231,13 @@ const HomePage: React.FC = () => {
         console.log('✅ Permit closed successfully');
       } catch (error: any) {
         console.error('❌ Close permit error:', error);
-        alert(error.response?.data?.error || 'An error occurred');
+        showError('common.error');
       }
     }
   };
 
   const handleReopen = async (permit: Permit) => {
-    if (window.confirm(`${t('permits.reopenPermit')}\n\n${t('permits.reopenConfirm')}`)) {
+    if (showConfirm('alerts.reopenPermitMessage')) {
       try {
         console.log('🔄 Reopening permit:', permit.id);
         const success = await reopenPermit(permit.id);
@@ -245,7 +247,7 @@ const HomePage: React.FC = () => {
         }
       } catch (error: any) {
         console.error('❌ Reopen permit error:', error);
-        alert(error.response?.data?.error || 'An error occurred');
+        showError('common.error');
       }
     }
   };
@@ -253,7 +255,7 @@ const HomePage: React.FC = () => {
   const handleExport = () => {
     exportPermitsToExcel(filteredPermits);
     logActivity('export_permits', `Exported ${filteredPermits.length} permits`);
-    alert('Data exported successfully!');
+    showSuccess('alerts.exportSuccess');
   };
 
   const handleQRScan = (result: string) => {
@@ -261,7 +263,7 @@ const HomePage: React.FC = () => {
     if (validatePermitNumber(result)) {
       setSearchTerm(result);
     } else {
-      alert('Invalid QR code format');
+      showAlert('alerts.invalidQRCode');
     }
   };
 
@@ -271,7 +273,7 @@ const HomePage: React.FC = () => {
 
   const addMaterial = () => {
     if (newPermit.materials.length >= 50) {
-      alert('Maximum of 50 materials allowed per permit');
+      showAlert('alerts.materialLimitReached');
       return;
     }
     

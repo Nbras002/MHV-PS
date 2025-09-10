@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { useActivityLog } from '../../hooks/useActivityLog';
+import { useAlerts } from '../../hooks/useAlerts';
 import { Eye, EyeOff, User, Lock } from 'lucide-react';
 
 interface LoginFormProps {
@@ -13,6 +14,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onForgotPassword, onRegister }) =
   const { t } = useTranslation();
   const { login } = useAuth();
   const { logActivity } = useActivityLog();
+  const { showError } = useAlerts();
   const [formData, setFormData] = useState({
     username: '',
     password: ''
@@ -55,13 +57,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onForgotPassword, onRegister }) =
       });
       
       if (err.response?.status === 404) {
-        setError(`API endpoint not found. Check if backend is running at: ${err.config?.baseURL || 'unknown URL'}`);
+        setError(t('alerts.apiNotFound') + ` ${err.config?.baseURL || 'unknown URL'}`);
       } else if (err.response?.status === 401) {
         setError(t('auth.loginError'));
       } else if (err.response?.status === 500) {
-        setError('Server error. Please check the backend logs.');
+        setError(t('alerts.serverError'));
       } else if (err.code === 'NETWORK_ERROR' || !err.response) {
-        setError('Network error. Please check your connection and try again.');
+        setError(t('alerts.networkError'));
       } else {
         setError(err.response?.data?.error || t('common.error'));
       }

@@ -5,6 +5,7 @@ import { User, REGIONS, RolePermissions, DEFAULT_ROLE_PERMISSIONS } from '../typ
 import { validatePassword, validateEmail } from '../utils/validation';
 import { usersAPI } from '../services/api';
 import { useModalScrollLock } from '../hooks/useModalScrollLock';
+import { useAlerts } from '../hooks/useAlerts';
 import { 
   Plus, 
   Edit, 
@@ -22,6 +23,7 @@ import {
 const ControlPanelPage: React.FC = () => {
   const { t } = useTranslation();
   const { users, addUser, updateUser, deleteUser, fetchUsers } = useAuth();
+  const { showAlert, showConfirm, showSuccess, showError } = useAlerts();
   
   const [showForm, setShowForm] = useState(false);
   const [showPermissionsModal, setShowPermissionsModal] = useState(false);
@@ -137,7 +139,7 @@ const ControlPanelPage: React.FC = () => {
       }
       
       resetForm();
-      alert(t('users.userSaved'));
+      showSuccess('alerts.userSaved');
     } catch (err: any) {
       setError(err.response?.data?.error || t('common.error'));
     } finally {
@@ -160,12 +162,12 @@ const ControlPanelPage: React.FC = () => {
   };
 
   const handleDelete = async (userId: string, username: string) => {
-    if (window.confirm(`${t('permits.delete')} ${t('auth.username')}\n\n${t('users.deleteConfirm')}`)) {
+    if (showConfirm('alerts.deleteUserMessage')) {
       try {
         await deleteUser(userId);
-        alert(t('users.userDeleted'));
+        showSuccess('alerts.userDeleted');
       } catch (error: any) {
-        alert(error.response?.data?.error || t('common.error'));
+        showError('common.error');
       }
     }
   };
@@ -569,7 +571,7 @@ const ControlPanelPage: React.FC = () => {
                 <button
                   onClick={() => {
                     setRolePermissions(DEFAULT_ROLE_PERMISSIONS);
-                    alert(t('users.resetToDefault'));
+                    showSuccess('alerts.resetToDefaultConfirm');
                   }}
                   className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
                 >
@@ -580,9 +582,9 @@ const ControlPanelPage: React.FC = () => {
                     try {
                       await saveRolePermissions(rolePermissions);
                       setShowPermissionsModal(false);
-                      alert('Permissions saved successfully!');
+                      showSuccess('alerts.permissionsSaved');
                     } catch (error) {
-                      alert('Failed to save permissions');
+                      showError('alerts.permissionsSaveError');
                     }
                   }}
                   className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"

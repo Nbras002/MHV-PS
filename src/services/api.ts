@@ -1,52 +1,12 @@
 import axios from 'axios';
 
-// Determine API base URL
-const getApiBaseUrl = () => {
-  // If VITE_API_URL is explicitly set, use it
-  if (import.meta.env.VITE_API_URL) {
-    const apiUrl = import.meta.env.VITE_API_URL;
-    // Ensure it ends with /api
-    return apiUrl.endsWith('/api') ? apiUrl : `${apiUrl}/api`;
-  }
-  
-  // In development, use localhost
-  if (import.meta.env.DEV) {
-    return 'http://localhost:10000/api';
-  }
-  
-  // In production, try to detect backend URL
-  const currentHost = window.location.hostname;
-  
-  // For Render.com deployment pattern
-  if (currentHost.includes('onrender.com')) {
-    // Try different backend URL patterns for Render.com
-    const possibleBackends = [
-      'project-vepr.onrender.com',
-      'permit-system-backend.onrender.com',
-      currentHost.replace('frontend', 'backend'),
-      currentHost.replace('-frontend', '-backend')
-    ];
-    
-    // Use the first one that looks like a backend URL
-    const backendHost = possibleBackends.find(host => 
-      host.includes('backend') || host.includes('vepr') || host !== currentHost
-    ) || 'project-vepr.onrender.com';
-    
-    return `https://${backendHost}/api`;
-  }
-  
-  // Fallback to same origin with /api path
-  return `${window.location.origin}/api`;
-};
-
-const API_BASE_URL = getApiBaseUrl();
+// Use relative API path - will be handled by Vite proxy in dev and Render proxy in production
+const API_BASE_URL = '/api';
 
 console.log('🔗 Frontend: API Configuration:', {
   baseURL: API_BASE_URL,
   environment: import.meta.env.MODE,
-  explicitURL: import.meta.env.VITE_API_URL,
-  currentHost: window.location.hostname,
-  currentOrigin: window.location.origin
+  origin: window.location.origin
 });
 
 // Create axios instance

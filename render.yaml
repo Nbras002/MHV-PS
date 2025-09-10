@@ -39,14 +39,16 @@ services:
     env: node
     plan: free
     buildCommand: npm install && npm run build
-    startCommand: dist
+    publishDirectory: dist
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://project-vepr.onrender.com/api/:splat
+      - type: rewrite
+        source: /*
+        destination: /index.html
     envVars:
-      - key: VITE_SUPABASE_URL
-        sync: false
-      - key: VITE_SUPABASE_ANON_KEY
-        sync: false
-      - key: VITE_API_URL
+      - key: VITE_API_TARGET
         fromService:
           type: web
           name: project-vepr
-          property: url

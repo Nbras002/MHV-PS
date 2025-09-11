@@ -65,23 +65,9 @@ router.post('/login', [
     // Check password
     let isValidPassword = false;
     
-    // Check if password is already hashed or plain text (for initial admin user)
-    if (user.password.startsWith('$2')) {
-      // Password is hashed, use bcrypt
-      isValidPassword = await bcrypt.compare(password, user.password);
-    } else {
-      // Password is plain text (initial setup), compare directly and then hash it
-      isValidPassword = password === user.password;
-      if (isValidPassword) {
-        // Hash the password for future use
-        const hashedPassword = await bcrypt.hash(password, 12);
-        await supabase
-          .from('users')
-          .update({ password: hashedPassword })
-          .eq('id', user.id);
-        console.log('🔐 Password hashed for user:', user.username);
-      }
-    }
+    // Always use bcrypt to compare passwords
+    // For the initial admin user, we'll handle this in the database migration
+    isValidPassword = await bcrypt.compare(password, user.password);
 
     console.log('🔑 Password validation result:', isValidPassword);
 

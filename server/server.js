@@ -115,6 +115,24 @@ app.use('/users', authenticateToken, userRoutes);
 app.use('/activity', authenticateToken, activityRoutes);
 app.use('/statistics', authenticateToken, statisticsRoutes);
 
+// Add debugging middleware to log all requests
+app.use((req, res, next) => {
+  console.log(`📍 ${req.method} ${req.originalUrl} - Headers:`, {
+    'content-type': req.get('content-type'),
+    'authorization': req.get('authorization') ? 'Bearer ***' : 'None'
+  });
+  next();
+});
+
+// Test route to verify API is working
+app.get('/api/test', (req, res) => {
+  res.json({
+    message: 'API is working',
+    timestamp: new Date().toISOString(),
+    path: req.originalUrl
+  });
+});
+
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('dist'));

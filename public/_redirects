@@ -1,5 +1,0 @@
-# Proxy API requests to backend
-/api/*  https://project-vepr.onrender.com/api/:splat  200
-
-# Handle client-side routing for SPA
-/*    /index.html   200

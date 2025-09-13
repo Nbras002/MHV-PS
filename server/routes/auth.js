@@ -52,7 +52,8 @@ router.post('/login', [
     console.log('👤 User query result:', {
       found: !!user,
       error: error?.message,
-      userId: user?.id
+      userId: user?.id,
+      userRole: user?.role
     });
 
     if (error || !user) {
@@ -65,9 +66,39 @@ router.post('/login', [
     // Check password
     let isValidPassword = false;
     
-    // Always use bcrypt to compare passwords
-    // For the initial admin user, we'll handle this in the database migration
-    isValidPassword = await bcrypt.compare(password, user.password);
+    try {
+      // Try bcrypt first (for hashed passwords)
+      isValidPassword = await bcrypt.compare(password, user.password);
+      
+      // If bcrypt fails and it's the admin user with plain text password, check directly
+      if (!isValidPassword && user.username === 'admin' && user.password === password) {
+        isValidPassword = true;
+        
+        // Hash the password for future use
+        const hashedPassword = await bcrypt.hash(password, 12);
+        await supabase
+          .from('users')
+          .update({ password: hashedPassword })
+          .eq('id', user.id);
+        
+        console.log('🔄 Admin password hashed for future use');
+      }
+    } catch (bcryptError) {
+      console.error('🔒 Bcrypt error:', bcryptError.message);
+      // Fallback to plain text comparison for initial setup
+      if (user.password === password) {
+        isValidPassword = true;
+        
+        // Hash the password for future use
+        const hashedPassword = await bcrypt.hash(password, 12);
+        await supabase
+          .from('users')
+          .update({ password: hashedPassword })
+          .eq('id', user.id);
+        
+        console.log('🔄 Password hashed for future use');
+      }
+    }
 
     console.log('🔑 Password validation result:', isValidPassword);
 
@@ -99,12 +130,26 @@ router.post('/login', [
 
     // Remove password from response
     const { password: _, ...userWithoutPassword } = user;
+    
+    // Ensure consistent field names for frontend
+    const formattedUser = {
+      id: userWithoutPassword.id,
+      username: userWithoutPassword.username,
+      email: userWithoutPassword.email,
+      firstName: userWithoutPassword.first_name,
+      lastName: userWithoutPassword.last_name,
+      region: userWithoutPassword.region,
+      role: userWithoutPassword.role,
+      permissions: userWithoutPassword.permissions,
+      createdAt: userWithoutPassword.created_at,
+      lastLogin: userWithoutPassword.last_login
+    };
 
     console.log('📤 Sending login response for user:', user.username);
 
     res.json({
       token,
-      user: userWithoutPassword
+      user: formattedUser
     });
   } catch (error) {
     console.error('Login error:', error);

@@ -1,13 +1,23 @@
 import axios from 'axios';
 
-// Use relative API path - will be handled by Vite proxy in dev and Render routing in production
-const API_BASE_URL = import.meta.env.DEV ? '/api' : '/api';
+// Determine API base URL based on environment
+const getApiBaseUrl = () => {
+  if (import.meta.env.DEV) {
+    // Development: use proxy
+    return '/api';
+  } else {
+    // Production: use environment variable or fallback to relative path
+    return import.meta.env.VITE_API_URL || '/api';
+  }
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 console.log('🔗 Frontend: API Configuration:', {
   baseURL: API_BASE_URL,
   environment: import.meta.env.MODE,
-  origin: window.location.origin,
-  isDev: import.meta.env.DEV
+  isDev: import.meta.env.DEV,
+  apiUrl: import.meta.env.VITE_API_URL
 });
 
 // Create axios instance

@@ -65,27 +65,38 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       console.log('🔐 AuthContext: Starting login process');
       const response = await authAPI.login({ username, password });
-      const { token, user: userData } = response.data;
+      const { token, user: userData } = response.data || {};
       
       console.log('✅ AuthContext: Login API call successful', {
         hasToken: !!token,
+        hasUser: !!userData,
         userId: userData?.id,
         username: userData?.username
       });
+
+      if (!token || !userData) {
+        console.error('❌ AuthContext: Invalid response - missing token or user data');
+        return false;
+      }
 
       localStorage.setItem('authToken', token);
       localStorage.setItem('currentUser', JSON.stringify(userData));
       setUser(userData);
       
       // Fetch users if admin
-      if (userData.role === 'admin') {
+      if (userData?.role === 'admin') {
         console.log('👑 AuthContext: User is admin, fetching users');
         await fetchUsers();
       }
       
       return true;
     } catch (error) {
-      console.error('❌ AuthContext: Login error:', error);
+      console.error('❌ AuthContext: Login error:', {
+        message: error?.message,
+        status: error?.response?.status,
+        data: error?.response?.data,
+        url: error?.config?.url
+      });
       return false;
     }
   };

@@ -9,21 +9,9 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: process.env.VITE_API_TARGET || 'http://localhost:10000',
+        target: 'http://localhost:10000',
         changeOrigin: true,
         secure: false,
-        timeout: 30000,
-        configure: (proxy, _options) => {
-          proxy.on('error', (err, _req, _res) => {
-            console.log('🚨 Proxy error:', err.message);
-          });
-          proxy.on('proxyReq', (proxyReq, req, _res) => {
-            console.log('📤 Proxying request:', req.method, req.url, '→', proxyReq.path);
-          });
-          proxy.on('proxyRes', (proxyRes, req, _res) => {
-            console.log('📥 Proxy response:', req.method, req.url, '→', proxyRes.statusCode);
-          });
-        },
       }
     }
   },

@@ -52,8 +52,7 @@ router.post('/login', [
     console.log('👤 User query result:', {
       found: !!user,
       error: error?.message,
-      userId: user?.id,
-      userRole: user?.role
+      userId: user?.id
     });
 
     if (error || !user) {
@@ -66,37 +65,21 @@ router.post('/login', [
     // Check password
     let isValidPassword = false;
     
-    try {
-      // Try bcrypt first (for hashed passwords)
+    // Check if password is already hashed or plain text (for initial admin user)
+    if (user.password.startsWith('$2')) {
+      // Password is hashed, use bcrypt
       isValidPassword = await bcrypt.compare(password, user.password);
-      
-      // If bcrypt fails and it's the admin user with plain text password, check directly
-      if (!isValidPassword && user.username === 'admin' && user.password === password) {
-        isValidPassword = true;
-        
+    } else {
+      // Password is plain text (initial setup), compare directly and then hash it
+      isValidPassword = password === user.password;
+      if (isValidPassword) {
         // Hash the password for future use
         const hashedPassword = await bcrypt.hash(password, 12);
         await supabase
           .from('users')
           .update({ password: hashedPassword })
           .eq('id', user.id);
-        
-        console.log('🔄 Admin password hashed for future use');
-      }
-    } catch (bcryptError) {
-      console.error('🔒 Bcrypt error:', bcryptError.message);
-      // Fallback to plain text comparison for initial setup
-      if (user.password === password) {
-        isValidPassword = true;
-        
-        // Hash the password for future use
-        const hashedPassword = await bcrypt.hash(password, 12);
-        await supabase
-          .from('users')
-          .update({ password: hashedPassword })
-          .eq('id', user.id);
-        
-        console.log('🔄 Password hashed for future use');
+        console.log('🔐 Password hashed for user:', user.username);
       }
     }
 
@@ -130,26 +113,12 @@ router.post('/login', [
 
     // Remove password from response
     const { password: _, ...userWithoutPassword } = user;
-    
-    // Ensure consistent field names for frontend
-    const formattedUser = {
-      id: userWithoutPassword.id,
-      username: userWithoutPassword.username,
-      email: userWithoutPassword.email,
-      firstName: userWithoutPassword.first_name,
-      lastName: userWithoutPassword.last_name,
-      region: userWithoutPassword.region,
-      role: userWithoutPassword.role,
-      permissions: userWithoutPassword.permissions,
-      createdAt: userWithoutPassword.created_at,
-      lastLogin: userWithoutPassword.last_login
-    };
 
     console.log('📤 Sending login response for user:', user.username);
 
     res.json({
       token,
-      user: formattedUser
+      user: userWithoutPassword
     });
   } catch (error) {
     console.error('Login error:', error);

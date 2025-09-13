@@ -27,6 +27,7 @@ services:
         fromService:
           type: web
           name: project-vepr-frontend
+          property: url
       - key: RATE_LIMIT_WINDOW_MS
         value: 900000
       - key: RATE_LIMIT_MAX_REQUESTS
@@ -38,14 +39,14 @@ services:
     env: node
     plan: free
     buildCommand: npm install && npm run build
-    publishDirectory: dist
-    headers:
-      - path: /*
-        headers:
-          X-Frame-Options: DENY
-          X-Content-Type-Options: nosniff
+    startCommand: dist
     envVars:
-      - key: VITE_API_TARGET
+      - key: VITE_SUPABASE_URL
+        sync: false
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false
+      - key: VITE_API_URL
         fromService:
           type: web
           name: project-vepr
+          property: url

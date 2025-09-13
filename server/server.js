@@ -28,13 +28,12 @@ testConnection();
 
 // Add request logging middleware
 app.use((req, res, next) => {
-  console.log(`📥 ${req.method} ${req.originalUrl}`, {
+  console.log(`📥 ${req.method} ${req.path}`, {
     body: req.method === 'POST' ? Object.keys(req.body || {}) : undefined,
     query: Object.keys(req.query || {}),
     headers: {
       'content-type': req.get('content-type'),
-      'user-agent': req.get('user-agent')?.substring(0, 50),
-      'authorization': req.get('authorization') ? 'Bearer ***' : 'None'
+      'user-agent': req.get('user-agent')?.substring(0, 50)
     },
     ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress
   });
@@ -115,28 +114,6 @@ app.use('/permits', authenticateToken, permitRoutes);
 app.use('/users', authenticateToken, userRoutes);
 app.use('/activity', authenticateToken, activityRoutes);
 app.use('/statistics', authenticateToken, statisticsRoutes);
-
-// Add debugging middleware to log all requests
-app.use((req, res, next) => {
-  if (req.originalUrl.startsWith('/api/')) {
-    console.log(`📍 API Request: ${req.method} ${req.originalUrl}`);
-  }
-  next();
-});
-
-// Test route to verify API is working
-app.get('/api/test', (req, res) => {
-  res.json({
-    message: 'API is working',
-    timestamp: new Date().toISOString(),
-    path: req.originalUrl,
-    method: req.method,
-    headers: {
-      'content-type': req.get('content-type'),
-      'user-agent': req.get('user-agent')?.substring(0, 50)
-    }
-  });
-});
 
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {

@@ -70,9 +70,9 @@ const AlertDialog: React.FC<AlertDialogProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-md w-full mx-4">
-        <div className="p-6">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal-container">
+      <div className="bg-white rounded-lg max-w-md w-full mx-4 my-4">
+        <div className="p-6 space-y-4">
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center">
               <div className={`p-2 rounded-full ${getBgColor()} mr-3`}>

@@ -34,8 +34,22 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding: 1.5rem;
   overflow-y: auto;
+}
+
+/* Add safe area padding for mobile devices */
+.safe-area-padding {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Ensure minimum spacing from viewport edges */
+.min-viewport-spacing {
+  min-height: calc(100vh - 2rem);
+  padding: 1rem;
 }
 
 /* Responsive table improvements */
@@ -47,5 +61,9 @@ html, body {
   .responsive-table th,
   .responsive-table td {
     padding: 0.5rem 0.25rem;
+  }
+  
+  .modal-container {
+    padding: 1rem;
   }
 }

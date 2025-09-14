@@ -58,9 +58,9 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-md w-full mx-4">
-        <div className="p-6">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal-container">
+      <div className="bg-white rounded-lg max-w-md w-full mx-4 my-4">
+        <div className="p-6 space-y-4">
           <div className="flex items-center mb-4">
             <div className={`p-2 rounded-full bg-gray-100 ${getIconColor()} mr-3`}>
               <AlertTriangle className="w-6 h-6" />

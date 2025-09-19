@@ -67,3 +67,16 @@ html, body {
     padding: 1rem;
   }
 }
+
+/* iPad and tablet specific improvements */
+@media (min-width: 768px) and (max-width: 1024px) {
+  /* Navigation adjustments for tablets */
+  .tablet-nav-text {
+    font-size: 0.875rem;
+  }
+  
+  /* Reduce spacing on tablets for better fit */
+  .tablet-spacing {
+    padding: 0.5rem 1rem;
+  }
+}

@@ -33,7 +33,7 @@ const Navigation: React.FC = () => {
               <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center mr-3">
                 <span className="text-white font-bold text-xs">MHV</span>
               </div>
-              <span className="text-lg sm:text-xl font-bold text-gray-900 hidden sm:block">
+              <span className="text-base sm:text-lg md:text-xl font-bold text-gray-900 hidden sm:block">
                 {t('permits.title')}
               </span>
             </div>
@@ -76,49 +76,49 @@ const Navigation: React.FC = () => {
           <div className={`flex items-center space-x-2 sm:space-x-4 lg:space-x-6 ${isRTL ? 'space-x-reverse' : ''}`}>
             <button
               onClick={() => handleNavigation('/')}
-              className="flex items-center space-x-1 sm:space-x-2 text-gray-700 hover:text-purple-600 transition-colors"
+              className="flex items-center space-x-1 sm:space-x-2 text-gray-700 hover:text-purple-600 transition-colors text-xs sm:text-sm md:text-base"
             >
               <Home className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="text-sm sm:text-base hidden sm:inline">{t('nav.home')}</span>
+              <span className="hidden sm:inline">{t('nav.home')}</span>
             </button>
             {canAccessControlPanel && (
               <button
                 onClick={() => handleNavigation('/control-panel')}
-                className="flex items-center space-x-1 sm:space-x-2 text-gray-700 hover:text-purple-600 transition-colors"
+                className="flex items-center space-x-1 sm:space-x-2 text-gray-700 hover:text-purple-600 transition-colors text-xs sm:text-sm md:text-base"
               >
                 <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="text-sm sm:text-base hidden sm:inline">{t('nav.controlPanel')}</span>
+                <span className="hidden sm:inline">{t('nav.controlPanel')}</span>
               </button>
             )}
             {canAccessStatistics && (
               <button
                 onClick={() => handleNavigation('/statistics')}
-                className="flex items-center space-x-1 sm:space-x-2 text-gray-700 hover:text-purple-600 transition-colors"
+                className="flex items-center space-x-1 sm:space-x-2 text-gray-700 hover:text-purple-600 transition-colors text-xs sm:text-sm md:text-base"
               >
                 <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="text-sm sm:text-base hidden sm:inline">{t('nav.statistics')}</span>
+                <span className="hidden sm:inline">{t('nav.statistics')}</span>
               </button>
             )}
             {canAccessActivityLog && (
               <button
                 onClick={() => handleNavigation('/activity-log')}
-                className="flex items-center space-x-1 sm:space-x-2 text-gray-700 hover:text-purple-600 transition-colors"
+                className="flex items-center space-x-1 sm:space-x-2 text-gray-700 hover:text-purple-600 transition-colors text-xs sm:text-sm md:text-base"
               >
                 <Activity className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="text-sm sm:text-base hidden sm:inline">{t('nav.activityLog')}</span>
+                <span className="hidden sm:inline">{t('nav.activityLog')}</span>
               </button>
             )}
             <div className="flex items-center space-x-2 sm:space-x-4">
-              <div className="text-xs sm:text-sm text-gray-600 hidden sm:block">
+              <div className="text-xs text-gray-600 hidden sm:block">
                 <span className="font-medium">{user.firstName || user.first_name} {user.lastName || user.last_name}</span>
-                <span className="block text-xs text-gray-500 hidden lg:block">{t(`roles.${user.role}`)}</span>
+                <span className="block text-xs text-gray-500 hidden md:block">{t(`roles.${user.role}`)}</span>
               </div>
               <button
                 onClick={logout}
-                className="flex items-center space-x-1 sm:space-x-2 text-gray-700 hover:text-red-600 transition-colors"
+                className="flex items-center space-x-1 sm:space-x-2 text-gray-700 hover:text-red-600 transition-colors text-xs sm:text-sm md:text-base"
               >
                 <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="text-sm sm:text-base hidden sm:inline">{t('nav.logout')}</span>
+                <span className="hidden sm:inline">{t('nav.logout')}</span>
               </button>
             </div>
           </div>
